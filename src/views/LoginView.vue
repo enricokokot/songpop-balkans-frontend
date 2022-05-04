@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height fluid class="justify-center indigo lighten-5">
+  <v-container fill-height fluid class="justify-center">
     <div class="about d-flex flex-column">
       <h1>This is a login page</h1>
       <v-form ref="form" v-model="valid" lazy-validation>
