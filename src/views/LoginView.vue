@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height fluid class="justify-center">
+  <v-container fill-height fluid class="justify-center indigo lighten-5">
     <div class="about d-flex flex-column">
       <h1>This is a login page</h1>
       <v-form ref="form" v-model="valid" lazy-validation>
@@ -21,22 +21,40 @@
           @click:append="show = !show"
         ></v-text-field>
 
-        <!-- <v-select
+        <v-select
           v-model="select"
           :items="genres"
           :rules="[rules.required]"
           label="Preferred Genre"
           required
-        ></v-select> -->
+        ></v-select>
 
-        <v-container class="d-flex flex-column">
-          <v-btn :disabled="!valid" color="success" @click="validate">
+        <v-container class="d-flex flex-column justify-start">
+          <v-btn
+            :disabled="!valid"
+            color="transparent"
+            class="success--text ma-1"
+            :elevation="0"
+            @click="validate"
+          >
             Validate
           </v-btn>
 
-          <v-btn color="error" @click="reset"> Reset Form </v-btn>
+          <v-btn
+            color="transparent"
+            class="error--text ma-1"
+            :elevation="0"
+            @click="reset"
+          >
+            Reset Form
+          </v-btn>
 
-          <v-btn color="warning" @click="resetValidation">
+          <v-btn
+            color="transparent"
+            class="warning--text ma-1"
+            :elevation="0"
+            @click="resetValidation"
+          >
             Reset Validation
           </v-btn>
         </v-container>
@@ -72,7 +90,7 @@ export default {
 
   methods: {
     validate() {
-      this.$refs.form.validate();
+      if (this.$refs.form.validate()) this.$router.push("/about");
     },
     reset() {
       this.$refs.form.reset();
