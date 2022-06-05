@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import HomeView from "../views/HomeView.vue";
+import VuetifyView from "../views/VuetifyView.vue";
 import LoginView from "../views/LoginView.vue";
+import HomeView from "../views/HomeView.vue";
 
 Vue.use(VueRouter);
 
@@ -9,7 +10,7 @@ const routes = [
   {
     path: "/vuetify",
     name: "vuetify",
-    component: HomeView,
+    component: VuetifyView,
   },
   {
     path: "/login",
@@ -18,6 +19,11 @@ const routes = [
     meta: {
       hideNavbar: true,
     },
+  },
+  {
+    path: "/home",
+    name: "home",
+    component: HomeView,
   },
   {
     path: "/about",
