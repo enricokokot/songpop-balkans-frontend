@@ -1,22 +1,29 @@
 <template>
   <div class="about">
     <v-container class="text-justify">
-      <h1>This is {{ userInfo.name.split(" ")[0] }}'s Home Page</h1>
+      <h1>
+        This is {{ userInfo.name.split(" ")[0] }}'s ({{ userInfo.id }}) Home
+        Page
+      </h1>
       <h2>Available playlists: {{ userInfo.playlists.join(", ") }}</h2>
       <h2>Available coins: {{ userInfo.coins }}</h2>
       <h2>Games played: {{ userInfo["games played"] }}</h2>
       <h2>Games won: {{ userInfo["games won"] }}</h2>
       <h2>Games lost: {{ userInfo["games lost"] }}</h2>
       <h2>Games tied: {{ userInfo["games tied"] }}</h2>
-      <h2>Active duels:</h2>
-      <li v-for="duel in userInfo.duels" :key="duel.id">
-        Against {{ allUsers.find((user) => user.id == duel.against).name }} in
-        {{ duel.playlist.toUpperCase() }} with a result of: {{ duel.score }} -
+      <h2>Duels you're waiting to respond:</h2>
+      <li v-for="duel in duelsWaitingOnResponseFromYou" :key="duel.id">
+        {{ duel.id }} against
         {{
-          allUsers
-            .find((user) => user.id == duel.against)
-            .duels.find((duel) => duel.against == userInfo.id).score
+          allUsersWhoArentUserInfo.find((user) => user.id == duel.challengerId)
+            .name
         }}
+        in
+        {{
+          allPlaylists.find((playlist) => playlist.id == duel.playlist).title
+        }}
+        with a result of {{ duel.challengeTakerScore }} -
+        {{ duel.challengerScore }}
         <v-btn color="primary" @click="quitADuel(userInfo.id, duel.against)"
           >Quit</v-btn
         >
@@ -44,8 +51,36 @@
           </v-list>
         </v-menu>
       </li>
+      <h2>Duels waiting on your response:</h2>
+      <li v-for="duel in duelsWaitingOnResponseFromOthers" :key="duel.id">
+        {{ duel.id }} against
+        {{
+          allUsersWhoArentUserInfo.find(
+            (user) => user.id == duel.challengeTakerId
+          ).name
+        }}
+        in
+        {{
+          allPlaylists.find((playlist) => playlist.id == duel.playlist).title
+        }}
+        with a result of {{ duel.challengerScore }} -
+        {{ duel.challengeTakerScore }}
+        <v-btn color="primary" @click="quitADuel(userInfo.id, duel.against)"
+          >Quit</v-btn
+        >
+      </li>
+      <!-- <h2>Active duels:</h2>
+      <li v-for="duel in userInfo.duels" :key="duel.id">
+        Against {{ allUsers.find((user) => user.id == duel.against).name }} in
+        {{ duel.playlist.toUpperCase() }} with a result of: {{ duel.score }} -
+        {{
+          allUsers
+            .find((user) => user.id == duel.against)
+            .duels.find((duel) => duel.against == userInfo.id).score
+        }} -->
+      <!-- </li> -->
       <h2>Duel someone:</h2>
-      <li v-for="user in allUsersWhoArentUserInfo" :key="user.id">
+      <li v-for="user in usersWhoAreYetToBeChallenged" :key="user.id">
         {{ user.name }}
         <v-dialog transition="dialog-bottom-transition" max-width="600">
           <template v-slot:activator="{ on, attrs }">
@@ -102,6 +137,10 @@ export default {
     userInfo: {},
     allUsers: [],
     allUsersWhoArentUserInfo: [],
+    duelsWaitingOnResponseFromYou: [],
+    duelsWaitingOnResponseFromOthers: [],
+    usersWhoAreYetToBeChallenged: [],
+    allPlaylists: [],
     items: [
       { title: "0" },
       { title: "25" },
@@ -115,7 +154,7 @@ export default {
   methods: {
     sendADuel: async (playerOneId, playerTwoId, playlist, playerOneScore) => {
       const response = await fetch("http://localhost:3000/duel/start", {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           playerOneId: playerOneId,
@@ -145,7 +184,6 @@ export default {
       });
       const data = await response.json();
       console.log("Request complete! response:", data);
-      // console.log(playerOneId, playerTwoId, playerOneScore, playerTwoScore);
     },
     quitADuel: async (playerOneId, playerTwoId) => {
       const response = await fetch("http://localhost:3000/duel/quit", {
@@ -163,16 +201,80 @@ export default {
   async mounted() {
     const response = await fetch("http://localhost:3000/user");
     const data = await response.json();
-    this.userInfo = data[2];
+    this.userInfo = data[3];
     this.allUsers = data;
-    this.allUsersWhoArentUserInfo = this.allUsers.filter((user) => {
-      if (
-        user.id != this.userInfo.id &&
-        !this.userInfo.duels.find((duel) => duel.against == user.id)
-      ) {
-        return user;
-      }
-    });
+    // this.allUsersWhoArentUserInfo = this.allUsers.filter((user) => {
+    //   if (
+    //     user.id != this.userInfo.id &&
+    //     !this.userInfo.duels.find((duel) => duel.against == user.id)
+    //   ) {
+    //     return user;
+    //   }
+    // });
+    this.allUsersWhoArentUserInfo = this.allUsers.filter(
+      (user) => user.id != this.userInfo.id
+    );
+    const response2 = await fetch("http://localhost:3000/duel");
+    const data2 = await response2.json();
+    this.duelsWaitingOnResponseFromYou = data2.filter(
+      (duel) => duel.challengeTakerId == this.userInfo.id
+    );
+    this.duelsWaitingOnResponseFromOthers = data2.filter(
+      (duel) => duel.challengerId == this.userInfo.id
+    );
+    const response3 = await fetch("http://localhost:3000/playlist");
+    const data3 = await response3.json();
+    this.allPlaylists = data3;
+    const userIdsOfUsersWhoArentCurrentUser = this.allUsersWhoArentUserInfo.map(
+      (user) => user.id
+    );
+    const userIdsOfChallengedUsers = this.duelsWaitingOnResponseFromYou.map(
+      (duel) => duel.challengerId
+    );
+    const userIdsOfOtherChallengedUsers =
+      this.duelsWaitingOnResponseFromOthers.map(
+        (duel) => duel.challengeTakerId
+      );
+    // console.log(
+    //   "userIdsOfUsersWhoArentCurrentUser",
+    //   userIdsOfUsersWhoArentCurrentUser
+    // );
+    // console.log("userIdsOfChallengedUsers", userIdsOfChallengedUsers);
+    // console.log("userIdsOfOtherChallengedUsers", userIdsOfOtherChallengedUsers);
+    const userIdsOfAllChallengedUsers = userIdsOfChallengedUsers.concat(
+      userIdsOfOtherChallengedUsers
+    );
+    // console.log("userIdsOfAllChallengedUsers", userIdsOfAllChallengedUsers);
+
+    let UserIdsOfUsersWhoAreYetToDuel = [...userIdsOfUsersWhoArentCurrentUser];
+    // console.log("UserIdsOfUsersWhoAreYetToDuel", UserIdsOfUsersWhoAreYetToDuel);
+
+    // TODO: fix this hard patch, gotta look for a better way,
+    // implemented because the forEach() did not work as planned
+    if (
+      userIdsOfAllChallengedUsers.sort().toString() ==
+      userIdsOfUsersWhoArentCurrentUser.sort().toString()
+    ) {
+      UserIdsOfUsersWhoAreYetToDuel = [];
+    } else {
+      userIdsOfAllChallengedUsers.forEach((userId) => {
+        UserIdsOfUsersWhoAreYetToDuel.splice(
+          userIdsOfUsersWhoArentCurrentUser.indexOf(userId),
+          1
+        );
+      });
+    }
+
+    // console.log("UserIdsOfUsersWhoAreYetToDuel", UserIdsOfUsersWhoAreYetToDuel);
+
+    this.usersWhoAreYetToBeChallenged = UserIdsOfUsersWhoAreYetToDuel.map(
+      (userId) =>
+        this.allUsersWhoArentUserInfo.find((user) => user.id == userId)
+    );
+    // console.log(
+    //   "this.usersWhoAreYetToBeChallenged",
+    //   this.usersWhoAreYetToBeChallenged
+    // );
   },
 };
 </script>
