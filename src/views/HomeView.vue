@@ -65,16 +65,6 @@
         {{ duel.challengeTakerScore }}
         <v-btn color="primary" @click="quitADuel(duel.id)">Quit</v-btn>
       </li>
-      <!-- <h2>Active duels:</h2>
-      <li v-for="duel in localUser.duels" :key="duel.id">
-        Against {{ allUsers.find((user) => user.id == duel.against).name }} in
-        {{ duel.playlist.toUpperCase() }} with a result of: {{ duel.score }} -
-        {{
-          allUsers
-            .find((user) => user.id == duel.against)
-            .duels.find((duel) => duel.against == localUser.id).score
-        }} -->
-      <!-- </li> -->
       <h2>Duel someone:</h2>
       <li v-for="user in usersWhoAreYetToBeChallenged" :key="user.id">
         {{ user.name }}
@@ -198,14 +188,6 @@ export default {
     const userData = await userResponse.json();
     this.localUser = userData[3];
     this.allUsers = userData;
-    // this.allUsersWhoArentLocalUser = this.allUsers.filter((user) => {
-    //   if (
-    //     user.id != this.localUser.id &&
-    //     !this.localUser.duels.find((duel) => duel.against == user.id)
-    //   ) {
-    //     return user;
-    //   }
-    // });
     this.allUsersWhoArentLocalUser = this.allUsers.filter(
       (user) => user.id != this.localUser.id
     );
@@ -229,21 +211,13 @@ export default {
       this.duelsWaitingOnResponseFromOthers.map(
         (duel) => duel.challengeTakerId
       );
-    // console.log(
-    //   "userIdsOfUsersWhoArentCurrentUser",
-    //   userIdsOfUsersWhoArentCurrentUser
-    // );
-    // console.log("userIdsOfChallengedUsers", userIdsOfChallengedUsers);
-    // console.log("userIdsOfOtherChallengedUsers", userIdsOfOtherChallengedUsers);
     const userIdsOfAllChallengedUsers = userIdsOfChallengedUsers.concat(
       userIdsOfOtherChallengedUsers
     );
-    // console.log("userIdsOfAllChallengedUsers", userIdsOfAllChallengedUsers);
 
     const userIdsOfUsersWhoAreYetToDuel = [
       ...userIdsOfUsersWhoArentCurrentUser,
     ];
-    // console.log("userIdsOfUsersWhoAreYetToDuel", userIdsOfUsersWhoAreYetToDuel);
 
     userIdsOfAllChallengedUsers.forEach((userId) =>
       userIdsOfUsersWhoAreYetToDuel.splice(
@@ -254,16 +228,10 @@ export default {
       )
     );
 
-    // console.log("userIdsOfUsersWhoAreYetToDuel", userIdsOfUsersWhoAreYetToDuel);
-
     this.usersWhoAreYetToBeChallenged = userIdsOfUsersWhoAreYetToDuel.map(
       (userId) =>
         this.allUsersWhoArentLocalUser.find((user) => user.id == userId)
     );
-    // console.log(
-    //   "this.usersWhoAreYetToBeChallenged",
-    //   this.usersWhoAreYetToBeChallenged
-    // );
   },
 };
 </script>
