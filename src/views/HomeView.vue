@@ -34,9 +34,9 @@
           </template>
 
           <v-list>
-            <v-list-item v-for="(item, index) in items" :key="index">
-              <v-list-item-title @click="endADuel(duel.id, item.title)">{{
-                item.title
+            <v-list-item v-for="(score, index) in scores" :key="index">
+              <v-list-item-title @click="endADuel(duel.id, score)">{{
+                score
               }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -81,17 +81,15 @@
                     </template>
 
                     <v-list>
-                      <v-list-item v-for="(item, index) in items" :key="index">
+                      <v-list-item
+                        v-for="(score, index) in scores"
+                        :key="index"
+                      >
                         <v-list-item-title
                           @click="
-                            sendADuel(
-                              localUser.id,
-                              user.id,
-                              playlist,
-                              item.title
-                            )
+                            sendADuel(localUser.id, user.id, playlist, score)
                           "
-                          >{{ item.title }}</v-list-item-title
+                          >{{ score }}</v-list-item-title
                         >
                       </v-list-item>
                     </v-list>
@@ -117,14 +115,7 @@ export default {
     allUsers: [],
     allDuels: [],
     allPlaylists: [],
-    items: [
-      { title: "0" },
-      { title: "25" },
-      { title: "50" },
-      { title: "75" },
-      { title: "90" },
-      { title: "100" },
-    ],
+    scores: ["0", "25", "50", "75", "90", "100"],
     closeOnClick: true,
   }),
   methods: {
