@@ -1,11 +1,13 @@
 <template>
   <div class="about">
     <v-container class="text-justify">
-      <h1>
+      <h1 v-if="localUser.name">
         This is {{ localUser.name.split(" ")[0] }}'s ({{ localUser.id }}) Home
         Page
       </h1>
-      <h2>Available playlists: {{ localUser.playlists.join(", ") }}</h2>
+      <h2 v-if="localUser.playlists">
+        Available playlists: {{ localUser.playlists.join(", ") }}
+      </h2>
       <h2>Available coins: {{ localUser.coins }}</h2>
       <h2>Games played: {{ localUser["games played"] }}</h2>
       <h2>Games won: {{ localUser["games won"] }}</h2>
