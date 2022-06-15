@@ -119,12 +119,27 @@ export default {
     closeOnClick: true,
   }),
   methods: {
-    sendADuel: async (
-      challengerId,
-      challengeTakerId,
-      playlist,
-      challengerScore
-    ) => {
+    async getUser() {
+      const singleUserResponse = await fetch("http://localhost:3000/user/0");
+      const singleUserData = await singleUserResponse.json();
+      this.localUser = singleUserData;
+    },
+    async getUsers() {
+      const userResponse = await fetch("http://localhost:3000/user");
+      const userData = await userResponse.json();
+      this.allUsers = userData;
+    },
+    async getDuels() {
+      const duelResponse = await fetch("http://localhost:3000/duel");
+      const duelData = await duelResponse.json();
+      this.allDuels = duelData;
+    },
+    async getPlaylists() {
+      const playlistResponse = await fetch("http://localhost:3000/playlist");
+      const playlistData = await playlistResponse.json();
+      this.allPlaylists = playlistData;
+    },
+    async sendADuel(challengerId, challengeTakerId, playlist, challengerScore) {
       const response = await fetch("http://localhost:3000/duel/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -137,8 +152,11 @@ export default {
       });
       const data = await response.json();
       console.log("Request complete! response:", data);
+      this.getUser();
+      this.getUsers();
+      this.getDuels();
     },
-    endADuel: async (duelId, chalengeeScore) => {
+    async endADuel(duelId, chalengeeScore) {
       const response = await fetch("http://localhost:3000/duel/end", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -149,8 +167,11 @@ export default {
       });
       const data = await response.json();
       console.log("Request complete! response:", data);
+      this.getUser();
+      this.getUsers();
+      this.getDuels();
     },
-    quitADuel: async (duelId) => {
+    async quitADuel(duelId) {
       const response = await fetch("http://localhost:3000/duel/quit", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -160,24 +181,16 @@ export default {
       });
       const data = await response.json();
       console.log("Request complete! response:", data);
+      this.getUser();
+      this.getUsers();
+      this.getDuels();
     },
   },
   async mounted() {
-    const singleUserResponse = await fetch("http://localhost:3000/user/1");
-    const singleUserData = await singleUserResponse.json();
-    this.localUser = singleUserData;
-
-    const userResponse = await fetch("http://localhost:3000/user");
-    const userData = await userResponse.json();
-    this.allUsers = userData;
-
-    const duelResponse = await fetch("http://localhost:3000/duel");
-    const duelData = await duelResponse.json();
-    this.allDuels = duelData;
-
-    const playlistResponse = await fetch("http://localhost:3000/playlist");
-    const playlistData = await playlistResponse.json();
-    this.allPlaylists = playlistData;
+    this.getUser();
+    this.getUsers();
+    this.getDuels();
+    this.getPlaylists();
   },
   computed: {
     allUsersWhoAreNotLocalUser() {
