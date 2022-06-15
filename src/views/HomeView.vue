@@ -11,7 +11,7 @@
       <h2>Games won: {{ userInfo["games won"] }}</h2>
       <h2>Games lost: {{ userInfo["games lost"] }}</h2>
       <h2>Games tied: {{ userInfo["games tied"] }}</h2>
-      <h2>Duels you're waiting to respond:</h2>
+      <h2>Duels waiting on your response:</h2>
       <li v-for="duel in duelsWaitingOnResponseFromYou" :key="duel.id">
         {{ duel.id }} against
         {{
@@ -24,9 +24,7 @@
         }}
         with a result of {{ duel.challengeTakerScore }} -
         {{ duel.challengerScore }}
-        <v-btn color="primary" @click="quitADuel(userInfo.id, duel.against)"
-          >Quit</v-btn
-        >
+        <v-btn color="primary" @click="quitADuel(duel.id)">Quit</v-btn>
         <v-menu top>
           <template v-slot:activator="{ on, attrs }">
             <v-btn color="primary" dark v-bind="attrs" v-on="on"> Play </v-btn>
@@ -51,7 +49,7 @@
           </v-list>
         </v-menu>
       </li>
-      <h2>Duels waiting on your response:</h2>
+      <h2>Duels you're waiting to respond:</h2>
       <li v-for="duel in duelsWaitingOnResponseFromOthers" :key="duel.id">
         {{ duel.id }} against
         {{
@@ -65,9 +63,7 @@
         }}
         with a result of {{ duel.challengerScore }} -
         {{ duel.challengeTakerScore }}
-        <v-btn color="primary" @click="quitADuel(userInfo.id, duel.against)"
-          >Quit</v-btn
-        >
+        <v-btn color="primary" @click="quitADuel(duel.id)">Quit</v-btn>
       </li>
       <!-- <h2>Active duels:</h2>
       <li v-for="duel in userInfo.duels" :key="duel.id">
@@ -185,13 +181,12 @@ export default {
       const data = await response.json();
       console.log("Request complete! response:", data);
     },
-    quitADuel: async (playerOneId, playerTwoId) => {
+    quitADuel: async (duelId) => {
       const response = await fetch("http://localhost:3000/duel/quit", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerOneId: playerOneId,
-          playerTwoId: playerTwoId,
+          duelId: duelId,
         }),
       });
       const data = await response.json();
@@ -199,10 +194,10 @@ export default {
     },
   },
   async mounted() {
-    const response = await fetch("http://localhost:3000/user");
-    const data = await response.json();
-    this.userInfo = data[3];
-    this.allUsers = data;
+    const userResponse = await fetch("http://localhost:3000/user");
+    const userData = await userResponse.json();
+    this.userInfo = userData[3];
+    this.allUsers = userData;
     // this.allUsersWhoArentUserInfo = this.allUsers.filter((user) => {
     //   if (
     //     user.id != this.userInfo.id &&
@@ -214,17 +209,17 @@ export default {
     this.allUsersWhoArentUserInfo = this.allUsers.filter(
       (user) => user.id != this.userInfo.id
     );
-    const response2 = await fetch("http://localhost:3000/duel");
-    const data2 = await response2.json();
-    this.duelsWaitingOnResponseFromYou = data2.filter(
+    const duelResponse = await fetch("http://localhost:3000/duel");
+    const duelData = await duelResponse.json();
+    this.duelsWaitingOnResponseFromYou = duelData.filter(
       (duel) => duel.challengeTakerId == this.userInfo.id
     );
-    this.duelsWaitingOnResponseFromOthers = data2.filter(
+    this.duelsWaitingOnResponseFromOthers = duelData.filter(
       (duel) => duel.challengerId == this.userInfo.id
     );
-    const response3 = await fetch("http://localhost:3000/playlist");
-    const data3 = await response3.json();
-    this.allPlaylists = data3;
+    const playlistResponse = await fetch("http://localhost:3000/playlist");
+    const playlistData = await playlistResponse.json();
+    this.allPlaylists = playlistData;
     const userIdsOfUsersWhoArentCurrentUser = this.allUsersWhoArentUserInfo.map(
       (user) => user.id
     );
