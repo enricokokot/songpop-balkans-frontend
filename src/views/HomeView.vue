@@ -119,15 +119,20 @@ export default {
     closeOnClick: true,
   }),
   methods: {
-    sendADuel: async (playerOneId, playerTwoId, playlist, playerOneScore) => {
+    sendADuel: async (
+      challengerId,
+      challengeTakerId,
+      playlist,
+      challengerScore
+    ) => {
       const response = await fetch("http://localhost:3000/duel/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerOneId: playerOneId,
-          playerTwoId: playerTwoId,
-          playlist: playlist,
-          playerOneScore: playerOneScore,
+          challengerId,
+          challengeTakerId,
+          playlist,
+          challengerScore,
         }),
       });
       const data = await response.json();
