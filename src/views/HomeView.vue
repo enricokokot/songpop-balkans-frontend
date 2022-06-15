@@ -15,8 +15,9 @@
       <li v-for="duel in duelsWaitingOnResponseFromYou" :key="duel.id">
         {{ duel.id }} against
         {{
-          allUsersWhoArentLocalUser.find((user) => user.id == duel.challengerId)
-            .name
+          allUsersWhoAreNotLocalUser.find(
+            (user) => user.id == duel.challengerId
+          ).name
         }}
         in
         {{
@@ -43,7 +44,7 @@
       <li v-for="duel in duelsWaitingOnResponseFromOthers" :key="duel.id">
         {{ duel.id }} against
         {{
-          allUsersWhoArentLocalUser.find(
+          allUsersWhoAreNotLocalUser.find(
             (user) => user.id == duel.challengeTakerId
           ).name
         }}
@@ -56,7 +57,7 @@
         <v-btn color="primary" @click="quitADuel(duel.id)">Quit</v-btn>
       </li>
       <h2>Duel someone:</h2>
-      <li v-for="user in usersWhoAreYetToBeChallenged" :key="user.id">
+      <li v-for="user in usersWhoHaveNotYetBeenChallenged" :key="user.id">
         {{ user.name }}
         <v-dialog transition="dialog-bottom-transition" max-width="600">
           <template v-slot:activator="{ on, attrs }">
@@ -112,10 +113,7 @@ export default {
   data: () => ({
     localUser: {},
     allUsers: [],
-    allUsersWhoArentLocalUser: [],
-    duelsWaitingOnResponseFromYou: [],
-    duelsWaitingOnResponseFromOthers: [],
-    usersWhoAreYetToBeChallenged: [],
+    allDuels: [],
     allPlaylists: [],
     items: [
       { title: "0" },
@@ -167,54 +165,67 @@ export default {
     },
   },
   async mounted() {
+    const singleUserResponse = await fetch("http://localhost:3000/user/1");
+    const singleUserData = await singleUserResponse.json();
+    this.localUser = singleUserData;
+
     const userResponse = await fetch("http://localhost:3000/user");
     const userData = await userResponse.json();
-    this.localUser = userData[3];
     this.allUsers = userData;
-    this.allUsersWhoArentLocalUser = this.allUsers.filter(
-      (user) => user.id != this.localUser.id
-    );
+
     const duelResponse = await fetch("http://localhost:3000/duel");
     const duelData = await duelResponse.json();
-    this.duelsWaitingOnResponseFromYou = duelData.filter(
-      (duel) => duel.challengeTakerId == this.localUser.id
-    );
-    this.duelsWaitingOnResponseFromOthers = duelData.filter(
-      (duel) => duel.challengerId == this.localUser.id
-    );
+    this.allDuels = duelData;
+
     const playlistResponse = await fetch("http://localhost:3000/playlist");
     const playlistData = await playlistResponse.json();
     this.allPlaylists = playlistData;
-    const userIdsOfUsersWhoArentCurrentUser =
-      this.allUsersWhoArentLocalUser.map((user) => user.id);
-    const userIdsOfChallengedUsers = this.duelsWaitingOnResponseFromYou.map(
-      (duel) => duel.challengerId
-    );
-    const userIdsOfOtherChallengedUsers =
-      this.duelsWaitingOnResponseFromOthers.map(
-        (duel) => duel.challengeTakerId
+  },
+  computed: {
+    allUsersWhoAreNotLocalUser() {
+      return this.allUsers.filter((user) => user.id != this.localUser.id);
+    },
+    duelsWaitingOnResponseFromYou() {
+      return this.allDuels.filter(
+        (duel) => duel.challengeTakerId == this.localUser.id
       );
-    const userIdsOfAllChallengedUsers = userIdsOfChallengedUsers.concat(
-      userIdsOfOtherChallengedUsers
-    );
+    },
+    duelsWaitingOnResponseFromOthers() {
+      return this.allDuels.filter(
+        (duel) => duel.challengerId == this.localUser.id
+      );
+    },
+    usersWhoHaveNotYetBeenChallenged() {
+      const userIdsOfUsersWhoArentCurrentUser =
+        this.allUsersWhoAreNotLocalUser.map((user) => user.id);
+      const userIdsOfChallengedUsers = this.duelsWaitingOnResponseFromYou.map(
+        (duel) => duel.challengerId
+      );
+      const userIdsOfOtherChallengedUsers =
+        this.duelsWaitingOnResponseFromOthers.map(
+          (duel) => duel.challengeTakerId
+        );
+      const userIdsOfAllChallengedUsers = userIdsOfChallengedUsers.concat(
+        userIdsOfOtherChallengedUsers
+      );
 
-    const userIdsOfUsersWhoAreYetToDuel = [
-      ...userIdsOfUsersWhoArentCurrentUser,
-    ];
+      const userIdsOfUsersWhoAreYetToDuel = [
+        ...userIdsOfUsersWhoArentCurrentUser,
+      ];
 
-    userIdsOfAllChallengedUsers.forEach((userId) =>
-      userIdsOfUsersWhoAreYetToDuel.splice(
-        userIdsOfUsersWhoAreYetToDuel.findIndex(
-          (thisUserId) => thisUserId == userId
-        ),
-        1
-      )
-    );
+      userIdsOfAllChallengedUsers.forEach((userId) =>
+        userIdsOfUsersWhoAreYetToDuel.splice(
+          userIdsOfUsersWhoAreYetToDuel.findIndex(
+            (thisUserId) => thisUserId == userId
+          ),
+          1
+        )
+      );
 
-    this.usersWhoAreYetToBeChallenged = userIdsOfUsersWhoAreYetToDuel.map(
-      (userId) =>
-        this.allUsersWhoArentLocalUser.find((user) => user.id == userId)
-    );
+      return userIdsOfUsersWhoAreYetToDuel.map((userId) =>
+        this.allUsersWhoAreNotLocalUser.find((user) => user.id == userId)
+      );
+    },
   },
 };
 </script>
