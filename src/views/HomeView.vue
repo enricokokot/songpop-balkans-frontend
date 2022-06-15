@@ -32,19 +32,9 @@
 
           <v-list>
             <v-list-item v-for="(item, index) in items" :key="index">
-              <v-list-item-title
-                @click="
-                  endADuel(
-                    localUser.id,
-                    allUsers.find((user) => user.id == duel.against).id,
-                    item.title,
-                    allUsers
-                      .find((user) => user.id == duel.against)
-                      .duels.find((duel) => duel.against == localUser.id).score
-                  )
-                "
-                >{{ item.title }}</v-list-item-title
-              >
+              <v-list-item-title @click="endADuel(duel.id, item.title)">{{
+                item.title
+              }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -152,20 +142,13 @@ export default {
       const data = await response.json();
       console.log("Request complete! response:", data);
     },
-    endADuel: async (
-      playerOneId,
-      playerTwoId,
-      playerOneScore,
-      playerTwoScore
-    ) => {
+    endADuel: async (duelId, chalengeeScore) => {
       const response = await fetch("http://localhost:3000/duel/end", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          playerOneId: playerOneId,
-          playerTwoId: playerTwoId,
-          playerOneScore: playerOneScore,
-          playerTwoScore: playerTwoScore,
+          duelId,
+          chalengeeScore,
         }),
       });
       const data = await response.json();
