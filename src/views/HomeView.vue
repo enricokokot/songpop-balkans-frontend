@@ -240,28 +240,23 @@ export default {
     );
     // console.log("userIdsOfAllChallengedUsers", userIdsOfAllChallengedUsers);
 
-    let UserIdsOfUsersWhoAreYetToDuel = [...userIdsOfUsersWhoArentCurrentUser];
-    // console.log("UserIdsOfUsersWhoAreYetToDuel", UserIdsOfUsersWhoAreYetToDuel);
+    const userIdsOfUsersWhoAreYetToDuel = [
+      ...userIdsOfUsersWhoArentCurrentUser,
+    ];
+    // console.log("userIdsOfUsersWhoAreYetToDuel", userIdsOfUsersWhoAreYetToDuel);
 
-    // TODO: fix this hard patch, gotta look for a better way,
-    // implemented because the forEach() did not work as planned
-    if (
-      userIdsOfAllChallengedUsers.sort().toString() ==
-      userIdsOfUsersWhoArentCurrentUser.sort().toString()
-    ) {
-      UserIdsOfUsersWhoAreYetToDuel = [];
-    } else {
-      userIdsOfAllChallengedUsers.forEach((userId) => {
-        UserIdsOfUsersWhoAreYetToDuel.splice(
-          userIdsOfUsersWhoArentCurrentUser.indexOf(userId),
-          1
-        );
-      });
-    }
+    userIdsOfAllChallengedUsers.forEach((userId) =>
+      userIdsOfUsersWhoAreYetToDuel.splice(
+        userIdsOfUsersWhoAreYetToDuel.findIndex(
+          (thisUserId) => thisUserId == userId
+        ),
+        1
+      )
+    );
 
-    // console.log("UserIdsOfUsersWhoAreYetToDuel", UserIdsOfUsersWhoAreYetToDuel);
+    // console.log("userIdsOfUsersWhoAreYetToDuel", userIdsOfUsersWhoAreYetToDuel);
 
-    this.usersWhoAreYetToBeChallenged = UserIdsOfUsersWhoAreYetToDuel.map(
+    this.usersWhoAreYetToBeChallenged = userIdsOfUsersWhoAreYetToDuel.map(
       (userId) =>
         this.allUsersWhoArentLocalUser.find((user) => user.id == userId)
     );
