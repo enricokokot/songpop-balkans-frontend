@@ -7,7 +7,7 @@
         <v-card-subtitle>{{ player.result }}</v-card-subtitle>
         <v-card-text></v-card-text>
         <v-card-actions
-          ><v-btn x-large color="primary">{{
+          ><v-btn x-large color="primary" @click="playADuel()">{{
             player.status
           }}</v-btn></v-card-actions
         >
@@ -48,7 +48,9 @@ export default {
     ],
   }),
   methods: {
-    //
+    playADuel() {
+      this.$router.push("/duel/start");
+    },
   },
   mounted() {
     //

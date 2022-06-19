@@ -5,6 +5,7 @@ import HomeView from "../views/HomeView.vue";
 import PlayView from "../views/PlayView.vue";
 import StoreView from "../views/StoreView.vue";
 import TemplateView from "../views/TemplateView.vue";
+import PrepareForDuelView from "../views/PrepareForDuelView.vue";
 
 Vue.use(VueRouter);
 
@@ -26,6 +27,11 @@ const routes = [
     path: "/duel",
     name: "duel",
     component: PlayView,
+  },
+  {
+    path: "/duel/start",
+    name: "start",
+    component: PrepareForDuelView,
   },
   {
     path: "/store",
