@@ -9,7 +9,12 @@
         {{ duelAgainst.name.split(" ")[0] }} has challenged you in
         {{ duelAgainst.playlist }}
       </h1>
-      <v-btn x-large color="primary">ACCEPT</v-btn>
+      <v-btn
+        x-large
+        color="primary"
+        @click="duel(duelAgainst, duelAgainst.playlist)"
+        >ACCEPT</v-btn
+      >
       <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
     </v-container>
     <v-container v-else fill-height justify-center>
@@ -21,6 +26,7 @@
         :key="playlist"
         x-large
         color="primary"
+        @click="duel(duelAgainst, playlist)"
         >{{ playlist }}</v-btn
       >
       <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
@@ -40,6 +46,9 @@ export default {
   methods: {
     goBack() {
       this.$router.back();
+    },
+    duel() {
+      this.$router.replace("/game");
     },
   },
   mounted() {

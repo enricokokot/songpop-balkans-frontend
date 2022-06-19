@@ -4,8 +4,10 @@ import LoginView from "../views/LoginView.vue";
 import HomeView from "../views/HomeView.vue";
 import PlayView from "../views/PlayView.vue";
 import StoreView from "../views/StoreView.vue";
-import TemplateView from "../views/TemplateView.vue";
 import PrepareForDuelView from "../views/PrepareForDuelView.vue";
+import GameView from "../views/GameView.vue";
+import ScoreView from "../views/ScoreView.vue";
+import TemplateView from "../views/TemplateView.vue";
 
 Vue.use(VueRouter);
 
@@ -32,6 +34,16 @@ const routes = [
     path: "/duel/start",
     name: "start",
     component: PrepareForDuelView,
+  },
+  {
+    path: "/game",
+    name: "game",
+    component: GameView,
+  },
+  {
+    path: "/score",
+    name: "score",
+    component: ScoreView,
   },
   {
     path: "/store",
