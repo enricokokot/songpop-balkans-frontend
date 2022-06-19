@@ -13,7 +13,7 @@ export default {
   }),
   methods: {
     goToPlay() {
-      this.$router.push("/play");
+      this.$router.push("/duel");
     },
     goToStore() {
       this.$router.push("/store");

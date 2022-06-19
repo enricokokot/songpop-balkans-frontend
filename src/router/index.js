@@ -23,8 +23,8 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/play",
-    name: "play",
+    path: "/duel",
+    name: "duel",
     component: PlayView,
   },
   {
