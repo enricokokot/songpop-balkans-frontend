@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height justify-center>
-    <v-btn x-large color="primary" @click="consoleLog()">PLAY</v-btn>
-    <v-btn x-large color="primary" @click="consoleLog()">STORE</v-btn>
+    <v-btn x-large color="primary" @click="goToPlay()">PLAY</v-btn>
+    <v-btn x-large color="primary" @click="goToStore()">STORE</v-btn>
   </v-container>
 </template>
 
@@ -12,8 +12,11 @@ export default {
     //
   }),
   methods: {
-    consoleLog: () => {
-      console.log("clicked!");
+    goToPlay() {
+      this.$router.push("/play");
+    },
+    goToStore() {
+      this.$router.push("/store");
     },
   },
   mounted() {
