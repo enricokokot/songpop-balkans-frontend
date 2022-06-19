@@ -20,6 +20,9 @@
         >
       </v-card>
     </v-container>
+    <v-container justify-center>
+      <v-btn x-large color="primary" @click="goBack()">BACK </v-btn>
+    </v-container>
   </v-container>
 </template>
 
@@ -43,6 +46,9 @@ export default {
         (player) => player.id === playerId
       );
       playerBeingQuit.status = "challenge";
+    },
+    goBack() {
+      this.$router.back();
     },
   },
   mounted() {

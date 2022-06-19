@@ -10,7 +10,7 @@
         {{ duelAgainst.playlist }}
       </h1>
       <v-btn x-large color="primary">ACCEPT</v-btn>
-      <v-btn x-large color="primary">BACK</v-btn>
+      <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
     </v-container>
     <v-container v-else fill-height justify-center>
       <h1 v-if="duelAgainst.name">
@@ -23,7 +23,7 @@
         color="primary"
         >{{ playlist }}</v-btn
       >
-      <v-btn x-large color="primary">BACK</v-btn>
+      <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
     </v-container>
   </v-container>
 </template>
@@ -38,7 +38,9 @@ export default {
     playlists: [],
   }),
   methods: {
-    //
+    goBack() {
+      this.$router.back();
+    },
   },
   mounted() {
     this.duelAgainst = store.duelAgainst;
