@@ -9,7 +9,14 @@
         <v-card-actions
           ><v-btn x-large color="primary" @click="playADuel(player)">{{
             player.status
-          }}</v-btn></v-card-actions
+          }}</v-btn
+          ><v-btn
+            v-if="player.status !== 'challenge'"
+            x-large
+            color="error"
+            @click="quitADuel(player.id)"
+            >QUIT
+          </v-btn></v-card-actions
         >
       </v-card>
     </v-container>
@@ -30,6 +37,12 @@ export default {
       store.duelAgainst = player;
       this.duelAgainst = player;
       this.$router.push("/duel/start");
+    },
+    quitADuel(playerId) {
+      const playerBeingQuit = store.players.find(
+        (player) => player.id === playerId
+      );
+      playerBeingQuit.status = "challenge";
     },
   },
   mounted() {
