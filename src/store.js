@@ -5,6 +5,7 @@ export default {
       name: "Dino Merlić",
       result: "3-0",
       status: "reply",
+      playlist: "folk",
     },
     {
       id: 1,
@@ -26,4 +27,5 @@ export default {
     },
   ],
   duelAgainst: {},
+  playlists: ["rock", "rap"],
 };
