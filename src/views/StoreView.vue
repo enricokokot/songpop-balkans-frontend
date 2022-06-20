@@ -11,7 +11,7 @@
         x-large
         color="primary"
         @click="buyPlaylist(playlist)"
-        >{{ playlist.title }}</v-btn
+        >{{ playlist.title }} {{ playlist.price }}</v-btn
       >
     </div>
     <v-btn x-large color="primary" @click="goBack()">BACK </v-btn>
