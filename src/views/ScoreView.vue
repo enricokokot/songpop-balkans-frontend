@@ -53,9 +53,19 @@ export default {
     if (!this.enemyPlayed)
       store.players.find((player) => player.id === this.duelAgainst.id).status =
         "waiting";
-    else
-      store.players.find((player) => player.id === this.duelAgainst.id).status =
-        "challenge";
+    else {
+      const enemyPlayer = store.players.find(
+        (player) => player.id === this.duelAgainst.id
+      );
+      enemyPlayer.status = "challenge";
+      if (this.finalScore > this.enemyFinalScore) enemyPlayer.result[0] += 1;
+      else if (this.finalScore < this.enemyFinalScore)
+        enemyPlayer.result[1] += 1;
+      else {
+        enemyPlayer.result[0] += 1;
+        enemyPlayer.result[1] += 1;
+      }
+    }
   },
   computed: {
     //

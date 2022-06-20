@@ -4,7 +4,9 @@
     <v-container v-for="player in players" :key="player.id">
       <v-card elevation="2" outlined>
         <v-card-title>{{ player.name }}</v-card-title>
-        <v-card-subtitle>{{ player.result }}</v-card-subtitle>
+        <v-card-subtitle v-if="player.result[0] !== 0 && player.result[1] !== 0"
+          >{{ player.result[0] }} - {{ player.result[1] }}</v-card-subtitle
+        >
         <v-card-text></v-card-text>
         <v-card-actions
           ><v-btn
