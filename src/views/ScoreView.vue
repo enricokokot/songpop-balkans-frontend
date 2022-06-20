@@ -58,12 +58,16 @@ export default {
         (player) => player.id === this.duelAgainst.id
       );
       enemyPlayer.status = "challenge";
-      if (this.finalScore > this.enemyFinalScore) enemyPlayer.result[0] += 1;
-      else if (this.finalScore < this.enemyFinalScore)
+      if (this.finalScore > this.enemyFinalScore) {
+        enemyPlayer.result[0] += 1;
+        store.coins += 3;
+      } else if (this.finalScore < this.enemyFinalScore) {
         enemyPlayer.result[1] += 1;
-      else {
+        store.coins += 1;
+      } else {
         enemyPlayer.result[0] += 1;
         enemyPlayer.result[1] += 1;
+        store.coins += 2;
       }
     }
   },

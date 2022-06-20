@@ -66,5 +66,12 @@ export default {
     },
   ],
   duelAgainst: {},
-  playlists: ["folk", "rock", "rap"],
+  playlists: ["folk", "rock"],
+  allPlaylists: [
+    { title: "folk", price: 20 },
+    { title: "Jura Stublić", price: 30 },
+    { title: "rock", price: 25 },
+    { title: "rap", price: 20 },
+  ],
+  coins: 25,
 };
