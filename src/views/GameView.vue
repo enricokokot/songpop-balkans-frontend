@@ -1,5 +1,8 @@
 <template>
   <v-container fill-height justify-center>
+    <h1 class="red--text">
+      Moving off this screen can cause bugs, proceed at your own peril
+    </h1>
     <h1 v-if="duelAgainst.name">
       You are playing against {{ duelAgainst.name.split(" ")[0] }}
       <h4
