@@ -57,7 +57,7 @@ export default {
       playerBeingQuit.status = "challenge";
     },
     goBack() {
-      this.$router.back();
+      this.$router.push("/");
     },
   },
   mounted() {
