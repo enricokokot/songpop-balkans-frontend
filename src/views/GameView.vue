@@ -98,7 +98,7 @@ export default {
     roundYourAnswer: "",
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 5,
+    gameTimer: 10,
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,
@@ -115,6 +115,7 @@ export default {
         this.roundYourAnswer === this.roundCorrectAnswer
           ? this.gameTimer * 10
           : 0;
+      this.gameTimer = 0;
     },
     prepareForTheNextRound() {
       this.roundSongs = this.duelAgainst.rounds[this.currentRound].songs;
@@ -144,7 +145,7 @@ export default {
         this.roundPoints = 0;
         this.answerGiven = false;
         this.gameTimePassed = false;
-        this.gameTimer = 5;
+        this.gameTimer = 10;
         this.prepareForTheNextRound();
       }
     },
