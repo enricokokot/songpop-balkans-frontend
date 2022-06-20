@@ -71,6 +71,44 @@ export default {
           },
         };
       }
+      if (playlistName === "Jura Stublić") {
+        duelingPlayer.playlist = playlistName;
+        duelingPlayer.rounds = {
+          0: {
+            songs: [
+              "Dobre vibracije",
+              "Chicago",
+              "Ljubav je zakon",
+              "Srce na cesti",
+            ],
+            correctAnswer: "Chicago",
+            playerPointsEarned: 0,
+            audio: require("C:\\Users\\ekoko\\Downloads\\Jura_Stublić_i_Film_-_Chicago.mp3"),
+          },
+          1: {
+            songs: [
+              "Ana Nirvana",
+              "Srce na cesti",
+              "Lijepo, lijepo neopisivo",
+              "Sjećam se prvog poljupca",
+            ],
+            correctAnswer: "Sjećam se prvog poljupca",
+            playerPointsEarned: 0,
+            audio: require("C:\\Users\\ekoko\\Downloads\\Jura_Stublić_i_Film_-_Sjećam_se_prvog_poljupca.mp3"),
+          },
+          2: {
+            songs: [
+              "Moderna djevojka",
+              "Ana Nirvana",
+              "Nježno, nježno, nježnije",
+              "Doći ću ti u snovima",
+            ],
+            correctAnswer: "Doći ću ti u snovima",
+            playerPointsEarned: 0,
+            audio: require("C:\\Users\\ekoko\\Downloads\\Jura_Stublić_i_Film_-_Doći_ću_ti_u_snovima.mp3"),
+          },
+        };
+      }
       if (playlistName === "rap") {
         duelingPlayer.playlist = playlistName;
         duelingPlayer.rounds = {
