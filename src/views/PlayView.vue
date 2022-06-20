@@ -7,17 +7,24 @@
         <v-card-subtitle>{{ player.result }}</v-card-subtitle>
         <v-card-text></v-card-text>
         <v-card-actions
-          ><v-btn x-large color="primary" @click="playADuel(player)">{{
+          ><v-btn
+            v-if="player.status === 'waiting'"
+            x-large
+            color="primary"
+            @click="playADuel(player)"
+            disabled
+            >{{ player.status }}</v-btn
+          ><v-btn v-else x-large color="primary" @click="playADuel(player)">{{
             player.status
           }}</v-btn
           ><v-btn
-            v-if="player.status !== 'challenge'"
+            v-if="player.status !== 'challenge' && player.status !== 'waiting'"
             x-large
             color="error"
             @click="quitADuel(player.id)"
             >QUIT
-          </v-btn></v-card-actions
-        >
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-container>
     <v-container justify-center>

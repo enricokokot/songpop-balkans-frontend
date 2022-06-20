@@ -7,7 +7,7 @@ export default {
       name: "Dino Merlić",
       result: "3-0",
       status: "reply",
-      playlist: "folk",
+      playlist: "rock",
       rounds: {
         0: {
           songs: ["Kiše jesenje", "Kap po kap", "Marija", "Ja sam budućnost"],
@@ -66,5 +66,5 @@ export default {
     },
   ],
   duelAgainst: {},
-  playlists: ["rock", "rap"],
+  playlists: ["folk", "rock", "rap"],
 };
