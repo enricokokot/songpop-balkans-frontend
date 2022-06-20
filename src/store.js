@@ -5,7 +5,7 @@ export default {
       name: "Dino Merlić",
       result: [3, 1],
       status: "reply",
-      playlist: "rock",
+      playlist: "Rock",
       rounds: {
         0: {
           songs: ["Kiše jesenje", "Kap po kap", "Marija", "Ja sam budućnost"],
@@ -64,12 +64,13 @@ export default {
     },
   ],
   duelAgainst: {},
-  playlists: ["folk", "rock"],
+  playlists: ["Folk", "Rock"],
   allPlaylists: [
-    { title: "folk", price: 20 },
-    { title: "Jura Stublić", price: 30 },
-    { title: "rock", price: 25 },
-    { title: "rap", price: 20 },
+    { title: "Folk", price: 20 },
+    { title: "Jura Stublić", price: 20 },
+    { title: "Rock", price: 25 },
+    { title: "Rap", price: 20 },
+    { title: "Istarski Mix", price: 20 },
   ],
   coins: 25,
 };

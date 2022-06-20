@@ -48,7 +48,7 @@ export default {
       const duelingPlayer = store.players.find(
         (player) => player.id === this.duelAgainst.id
       );
-      if (playlistName === "folk") {
+      if (playlistName === "Folk") {
         duelingPlayer.playlist = playlistName;
         duelingPlayer.rounds = {
           0: {
@@ -68,6 +68,39 @@ export default {
             correctAnswer: "Sinan Sakić",
             playerPointsEarned: 0,
             audio: require("./..\\assets\\clips\\Sinan_Sakić_-_Trezan-cut.mp3"),
+          },
+        };
+      }
+      if (playlistName === "Istarski Mix") {
+        duelingPlayer.playlist = playlistName;
+        duelingPlayer.rounds = {
+          0: {
+            songs: [
+              "Šparoga bluz",
+              "Cice i guzice",
+              "Rege na brege",
+              "Katarina",
+            ],
+            correctAnswer: "Cice i guzice",
+            playerPointsEarned: 0,
+            audio: require("./..\\assets\\clips\\Šajeta_-_Cice_i_guzice-cut.mp3"),
+          },
+          1: {
+            songs: ["Katarina", "Sandra", "Seksuvalna", "Nisi više mala"],
+            correctAnswer: "Nisi više mala",
+            playerPointsEarned: 0,
+            audio: require("./..\\assets\\clips\\Alen_Vitasović_-_Nisi_više_mala-cut.mp3"),
+          },
+          2: {
+            songs: [
+              "Gustafi",
+              "The Night Express Band",
+              "Serđo Valić",
+              "Koktelsi",
+            ],
+            correctAnswer: "Koktelsi",
+            playerPointsEarned: 0,
+            audio: require("./..\\assets\\clips\\Koktelsi_-_Malice-cut.mp3"),
           },
         };
       }
@@ -109,7 +142,7 @@ export default {
           },
         };
       }
-      if (playlistName === "rap") {
+      if (playlistName === "Rap") {
         duelingPlayer.playlist = playlistName;
         duelingPlayer.rounds = {
           0: {
@@ -137,7 +170,7 @@ export default {
           },
         };
       }
-      if (playlistName === "rock" && this.duelAgainst.name !== "Dino Merlić") {
+      if (playlistName === "Rock" && this.duelAgainst.name !== "Dino Merlić") {
         duelingPlayer.playlist = playlistName;
         duelingPlayer.rounds = {
           0: {
