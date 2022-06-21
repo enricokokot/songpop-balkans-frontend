@@ -39,6 +39,9 @@ const routes = [
     path: "/game",
     name: "game",
     component: GameView,
+    meta: {
+      hideNavbar: true,
+    },
   },
   {
     path: "/score",
