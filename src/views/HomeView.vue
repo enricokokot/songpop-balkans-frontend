@@ -1,15 +1,23 @@
 <template>
-  <v-container fill-height justify-center>
-    <v-col></v-col>
-    <v-col>
-      <v-btn x-large color="primary" class="pa-0 ma-2" @click="goToPlay()"
+  <v-container fill-height>
+    <v-row class="align-center justify-center">
+      <v-btn
+        x-large
+        color="primary"
+        class="ma-2"
+        @click="goToPlay()"
+        width="15%"
         >PLAY</v-btn
       >
-      <v-btn x-large color="primary" class="pa-0 ma-2" @click="goToStore()"
+      <v-btn
+        x-large
+        color="primary"
+        class="ma-2"
+        @click="goToStore()"
+        width="15%"
         >STORE</v-btn
       >
-    </v-col>
-    <v-col></v-col>
+    </v-row>
   </v-container>
 </template>
 
