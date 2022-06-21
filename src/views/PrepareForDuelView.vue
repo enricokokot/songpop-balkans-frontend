@@ -1,33 +1,61 @@
 <template>
-  <v-container fill-height justify-center>
-    <v-container
-      v-if="duelAgainst.status === 'reply'"
-      fill-height
-      justify-center
-    >
-      <h1 v-if="duelAgainst.name">
-        {{ duelAgainst.name.split(" ")[0] }} has challenged you in
-        {{ duelAgainst.playlist }}
-      </h1>
-      <v-btn x-large color="primary" @click="duel(duelAgainst.playlist)"
-        >ACCEPT</v-btn
-      >
-      <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
-    </v-container>
-    <v-container v-else fill-height justify-center>
-      <h1 v-if="duelAgainst.name">
-        What do you want to duel {{ duelAgainst.name.split(" ")[0] }} in?
-      </h1>
-      <v-btn
-        v-for="playlist in playlists"
-        :key="playlist"
-        x-large
-        color="primary"
-        @click="duel(playlist)"
-        >{{ playlist }}</v-btn
-      >
-      <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
-    </v-container>
+  <v-container fill-height fluid>
+    <v-row class="align-center justify-center">
+      <v-col v-if="duelAgainst.status === 'reply'">
+        <v-row class="align-center justify-center pa-2">
+          <h1 v-if="duelAgainst.name" class="text-center">
+            {{ duelAgainst.name.split(" ")[0] }} has challenged you in
+            {{ duelAgainst.playlist }}
+          </h1>
+        </v-row>
+        <v-row class="align-center justify-center"
+          ><v-btn
+            x-large
+            class="ma-2"
+            color="primary"
+            @click="duel(duelAgainst.playlist)"
+            width="40%"
+            >ACCEPT</v-btn
+          ></v-row
+        >
+        <v-row class="align-center justify-center"
+          ><v-btn x-large color="primary mt-8" @click="goBack()" width="40%"
+            >BACK</v-btn
+          ></v-row
+        >
+      </v-col>
+
+      <v-col v-else>
+        <v-row class="align-center justify-center pa-2">
+          <h1 v-if="duelAgainst.name" class="text-center">
+            What do you want to duel {{ duelAgainst.name.split(" ")[0] }} in?
+          </h1>
+        </v-row>
+        <v-row
+          v-for="playlist in playlists"
+          :key="playlist"
+          class="align-center justify-center"
+          ><v-btn
+            x-large
+            class="ma-2"
+            color="primary"
+            @click="duel(playlist)"
+            width="40%"
+            >{{ playlist }}</v-btn
+          ></v-row
+        >
+        <v-row class="align-center justify-center"
+          ><v-btn
+            x-large
+            class="mt-8"
+            color="primary"
+            @click="goBack()"
+            width="40%"
+            >BACK</v-btn
+          ></v-row
+        >
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
