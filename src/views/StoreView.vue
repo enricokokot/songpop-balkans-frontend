@@ -1,20 +1,39 @@
 <template>
-  <v-container fill-height justify-center>
-    <h1>This is the store page</h1>
-    <h3>
-      You are holding {{ coins }} coins, ready to be spent, in your pocket...
-      What playlist would you like to spend 'em on?'
-    </h3>
-    <div v-for="playlist in allPlaylists" :key="playlist.title">
-      <v-btn
-        v-if="!playlists.includes(playlist.title)"
-        x-large
-        color="primary"
-        @click="buyPlaylist(playlist)"
-        >{{ playlist.title }} {{ playlist.price }}</v-btn
-      >
-    </div>
-    <v-btn x-large color="primary" @click="goBack()">BACK </v-btn>
+  <v-container fill-height fluid>
+    <v-row class="align-center justify-center">
+      <v-col>
+        <v-row class="align-center justify-center pa-2">
+          <h1>This is the store page</h1>
+        </v-row>
+        <v-row class="align-center justify-center pa-2">
+          <h3 class="text-center">
+            You are holding {{ coins }} coins, ready to be spent, in your
+            pocket...<br />
+            What playlist would you like to spend 'em on?'
+          </h3>
+        </v-row>
+        <v-row
+          v-for="playlist in allPlaylists"
+          :key="playlist.title"
+          class="align-center justify-center"
+        >
+          <v-btn
+            v-if="!playlists.includes(playlist.title)"
+            x-large
+            class="ma-2"
+            color="primary"
+            @click="buyPlaylist(playlist)"
+            width="30%"
+            >{{ playlist.title }} {{ playlist.price }}</v-btn
+          >
+        </v-row>
+        <v-row class="align-center justify-center mt-8">
+          <v-btn x-large color="primary" @click="goBack()" width="30%"
+            >BACK
+          </v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
