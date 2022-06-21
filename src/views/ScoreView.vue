@@ -1,20 +1,37 @@
 <template>
-  <v-container fill-height justify-center>
-    <h1>This is the score page</h1>
-    <h3>{{ finalScore }} - {{ enemyFinalScore }}</h3>
-    <h3 v-if="!enemyPlayed">
-      We've sent your offer to {{ duelAgainst.name.split(" ")[0] }} :)
-    </h3>
-    <h3 v-else-if="finalScore > enemyFinalScore">
-      Congratulations, you've earned your 3 coins!
-    </h3>
-    <h3 v-else-if="finalScore < enemyFinalScore">
-      The enemy was better, hope this (1) coin will help...
-    </h3>
-    <h3 v-else>
-      It seems you've found your match, you've both earned 2 coins!
-    </h3>
-    <v-btn x-large color="primary" @click="goBack()">BACK</v-btn>
+  <v-container fill-height fluid>
+    <v-row class="align-center justify-center">
+      <v-col>
+        <v-row class="align-center justify-center pa-2">
+          <h1>This is the score page</h1>
+        </v-row>
+        <v-row class="align-center justify-center pa-2">
+          <h3>You've managed to earn a result of</h3>
+        </v-row>
+        <v-row class="align-center justify-center pa-2">
+          <h3>{{ finalScore }} - {{ enemyFinalScore }}</h3>
+        </v-row>
+        <v-row class="align-center justify-center pa-2">
+          <h3 v-if="!enemyPlayed">
+            We've sent your offer to {{ duelAgainst.name.split(" ")[0] }} :)
+          </h3>
+          <h3 v-else-if="finalScore > enemyFinalScore">
+            Congratulations, you've earned your 3 coins!
+          </h3>
+          <h3 v-else-if="finalScore < enemyFinalScore">
+            The enemy was better, hope this (1) coin will help...
+          </h3>
+          <h3 v-else>
+            It seems you've found your match, you've both earned 2 coins!
+          </h3>
+        </v-row>
+        <v-row class="align-center justify-center pa-2">
+          <v-btn x-large color="primary" @click="goBack()" width="25%"
+            >BACK</v-btn
+          >
+        </v-row>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

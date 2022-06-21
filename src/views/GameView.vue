@@ -141,7 +141,27 @@
                 >{{ song }}</v-btn
               >
             </v-row>
-            <v-row class="align-center justify-center mt-8"
+            <v-row class="align-center justify-center mt-8">
+              <v-btn
+                v-if="gameTimePassed"
+                x-large
+                class="ma-2"
+                color="primary"
+                @click="nextRound()"
+                width="25%"
+                >NEXT ROUND</v-btn
+              >
+              <v-btn
+                v-else
+                x-large
+                class="ma-2"
+                width="25%"
+                color="primary"
+                disabled
+                >NEXT ROUND</v-btn
+              >
+            </v-row>
+            <v-row class="align-center justify-center"
               ><v-btn
                 v-if="answerGiven || gameTimePassed"
                 x-large
@@ -160,26 +180,6 @@
                 width="25%"
                 disabled
                 >QUIT</v-btn
-              >
-            </v-row>
-            <v-row class="align-center justify-center">
-              <v-btn
-                v-if="gameTimePassed"
-                x-large
-                class="ma-2"
-                color="primary"
-                @click="nextRound()"
-                width="25%"
-                >NEXT ROUND</v-btn
-              >
-              <v-btn
-                v-else
-                x-large
-                class="ma-2"
-                width="25%"
-                color="primary"
-                disabled
-                >NEXT ROUND</v-btn
               >
             </v-row>
           </v-col>
