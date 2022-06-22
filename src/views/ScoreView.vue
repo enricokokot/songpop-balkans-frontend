@@ -1,5 +1,14 @@
 <template>
   <v-container fill-height fluid>
+    <v-snackbar v-model="snackbar" :multi-line="multiLine">
+      {{ text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-row class="align-center justify-center">
       <v-col>
         <v-row class="align-center justify-center pa-2">
@@ -13,7 +22,7 @@
         </v-row>
         <v-row class="align-center justify-center pa-2">
           <h3 v-if="!enemyPlayed">
-            We've sent your offer to {{ duelAgainst.name.split(" ")[0] }} :)
+            We've sent your challenge to {{ duelAgainst.name.split(" ")[0] }} :)
           </h3>
           <h3 v-else-if="finalScore > enemyFinalScore">
             Congratulations, you've earned your 3 coins!
@@ -45,6 +54,10 @@ export default {
     finalScore: 0,
     enemyFinalScore: 0,
     enemyPlayed: true,
+    achievementUnlocked: false,
+    multiLine: true,
+    snackbar: false,
+    text: `Congratulations, you've earned the 'Earn a score of 250' achievement!`,
   }),
   methods: {
     goBack() {
@@ -85,6 +98,13 @@ export default {
         enemyPlayer.result[0] += 1;
         enemyPlayer.result[1] += 1;
         store.coins += 2;
+      }
+      if (this.finalScore >= 250) {
+        store.achievements.find(
+          (achievement) => achievement.id === 3
+        ).progress = 1;
+        this.achievementUnlocked = true;
+        this.snackbar = true;
       }
     }
   },

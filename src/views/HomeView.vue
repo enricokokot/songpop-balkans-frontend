@@ -13,6 +13,14 @@
         x-large
         color="primary"
         class="ma-2"
+        @click="goToAchievements()"
+        width="15%"
+        >ACHIEVEMENTS</v-btn
+      >
+      <v-btn
+        x-large
+        color="primary"
+        class="ma-2"
         @click="goToStore()"
         width="15%"
         >STORE</v-btn
@@ -30,6 +38,9 @@ export default {
   methods: {
     goToPlay() {
       this.$router.push("/duel");
+    },
+    goToAchievements() {
+      this.$router.push("/achievements");
     },
     goToStore() {
       this.$router.push("/store");

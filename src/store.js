@@ -73,4 +73,21 @@ export default {
     { title: "Istarski Mix", price: 20 },
   ],
   coins: 25,
+  achievements: [
+    { id: 0, mission: "Win 10 games", progress: 1, total: 10 },
+    {
+      id: 1,
+      mission: "Win a match agains 3 different people",
+      progress: 3,
+      total: 3,
+    },
+    {
+      id: 2,
+      mission: "Win with 5 different playlists",
+      progress: 2,
+      total: 5,
+    },
+    { id: 3, mission: "Earn a score of 250", progress: 0, total: 1 },
+    { id: 4, mission: "Earn a score of 300", progress: 0, total: 1 }, // Perfectionist
+  ],
 };
