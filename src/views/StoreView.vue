@@ -24,7 +24,10 @@
             color="primary"
             @click="buyPlaylist(playlist)"
             width="30%"
-            >{{ playlist.title }} {{ playlist.price }}</v-btn
+            ><v-col class="d-flex justify-start">{{ playlist.title }}</v-col>
+            <v-col class="d-flex justify-end">{{
+              playlist.price
+            }}</v-col></v-btn
           >
         </v-row>
         <v-row class="align-center justify-center mt-8">
