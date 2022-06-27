@@ -231,7 +231,7 @@ export default {
           },
         };
       }
-      this.$router.replace("/game");
+      this.$router.replace("/app2/game");
     },
   },
   mounted() {

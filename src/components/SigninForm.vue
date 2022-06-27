@@ -88,7 +88,7 @@ export default {
 
   methods: {
     validate() {
-      if (this.$refs.form.validate()) this.$router.push("/about");
+      if (this.$refs.form.validate()) this.$router.push("/app2/about");
     },
     reset() {
       this.$refs.form.reset();

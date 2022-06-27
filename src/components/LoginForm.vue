@@ -78,7 +78,7 @@ export default {
 
   methods: {
     validate() {
-      if (this.$refs.form.validate()) this.$router.push("/home");
+      if (this.$refs.form.validate()) this.$router.push("/app2/home");
     },
     reset() {
       this.$refs.form.reset();

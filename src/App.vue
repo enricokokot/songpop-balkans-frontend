@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar v-if="!$route.meta.hideNavbar" app class="indigo" dark>
       <div class="d-flex align-center">
-        <router-link style="text-decoration: none; color: inherit" to="/">
+        <router-link style="text-decoration: none; color: inherit" to="/app2/">
           <h2>SONGPOP BALKANS</h2>
         </router-link>
       </div>
@@ -24,7 +24,7 @@ export default {
 
   methods: {
     goToHome() {
-      this.$router.push("/");
+      this.$router.push("/app2/");
     },
   },
 };

@@ -14,7 +14,7 @@ Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/login",
+    path: "app2/login",
     name: "login",
     component: LoginView,
     meta: {
@@ -22,22 +22,22 @@ const routes = [
     },
   },
   {
-    path: "/",
+    path: "app2/",
     name: "home",
     component: HomeView,
   },
   {
-    path: "/duel",
+    path: "app2/duel",
     name: "duel",
     component: PlayView,
   },
   {
-    path: "/duel/start",
+    path: "app2/duel/start",
     name: "start",
     component: PrepareForDuelView,
   },
   {
-    path: "/game",
+    path: "app2/game",
     name: "game",
     component: GameView,
     meta: {
@@ -45,22 +45,22 @@ const routes = [
     },
   },
   {
-    path: "/score",
+    path: "app2/score",
     name: "score",
     component: ScoreView,
   },
   {
-    path: "/achievements",
+    path: "app2/achievements",
     name: "achievements",
     component: AchievementsView,
   },
   {
-    path: "/store",
+    path: "app2/store",
     name: "store",
     component: StoreView,
   },
   {
-    path: "/template",
+    path: "app2/template",
     name: "template",
     component: TemplateView,
   },

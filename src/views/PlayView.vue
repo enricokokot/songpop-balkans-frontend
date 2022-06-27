@@ -95,7 +95,7 @@ export default {
     playADuel(player) {
       store.duelAgainst = player;
       this.duelAgainst = player;
-      this.$router.push("/duel/start");
+      this.$router.push("/app2/duel/start");
     },
     quitADuel(playerId) {
       const playerBeingQuit = store.players.find(
@@ -104,7 +104,7 @@ export default {
       playerBeingQuit.status = "challenge";
     },
     goBack() {
-      this.$router.push("/");
+      this.$router.push("/app2/");
     },
   },
   mounted() {

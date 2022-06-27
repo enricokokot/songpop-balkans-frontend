@@ -245,7 +245,7 @@ export default {
       this.totalPoints = this.totalPoints + this.roundPoints;
       if (!this.duelAgainst.rounds[this.currentRound]) {
         store.duelAgainst.yourScore = this.totalPoints;
-        this.$router.replace("/score");
+        this.$router.replace("/app2/score");
       } else {
         this.roundYourAnswer = "";
         this.roundPoints = 0;
