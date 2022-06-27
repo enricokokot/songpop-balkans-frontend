@@ -83,19 +83,19 @@ export default {
             songs: ["Mali signali", "Bele ruže", "Ponovo", "Aspirin"],
             correctAnswer: "Aspirin",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Seka_-_Aspirin-cut.mp3"),
+            audio: require("../assets/clips/Seka_-_Aspirin-cut.mp3"),
           },
           1: {
             songs: ["Mile Kitić", "Đani", "Olja Karleuša", "Miligram 3"],
             correctAnswer: "Mile Kitić",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Mile_Kitić_-_Šampanjac-cut.mp3"),
+            audio: require("../assets/clips/Mile_Kitić_-_Šampanjac-cut.mp3"),
           },
           2: {
             songs: ["Đani", "Djogani", "Trik FX", "Sinan Sakić"],
             correctAnswer: "Sinan Sakić",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Sinan_Sakić_-_Trezan-cut.mp3"),
+            audio: require("../assets/clips/Sinan_Sakić_-_Trezan-cut.mp3"),
           },
         };
       }
@@ -111,13 +111,13 @@ export default {
             ],
             correctAnswer: "Cice i guzice",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Šajeta_-_Cice_i_guzice-cut.mp3"),
+            audio: require("../assets/clips/Šajeta_-_Cice_i_guzice-cut.mp3"),
           },
           1: {
             songs: ["Katarina", "Sandra", "Seksuvalna", "Nisi više mala"],
             correctAnswer: "Nisi više mala",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Alen_Vitasović_-_Nisi_više_mala-cut.mp3"),
+            audio: require("../assets/clips/Alen_Vitasović_-_Nisi_više_mala-cut.mp3"),
           },
           2: {
             songs: [
@@ -128,7 +128,7 @@ export default {
             ],
             correctAnswer: "Koktelsi",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Koktelsi_-_Malice-cut.mp3"),
+            audio: require("../assets/clips/Koktelsi_-_Malice-cut.mp3"),
           },
         };
       }
@@ -144,7 +144,7 @@ export default {
             ],
             correctAnswer: "Chicago",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Jura_Stublić_i_Film_-_Chicago-cut.mp3"),
+            audio: require("../assets/clips/Jura_Stublić_i_Film_-_Chicago-cut.mp3"),
           },
           1: {
             songs: [
@@ -155,7 +155,7 @@ export default {
             ],
             correctAnswer: "Sjećam se prvog poljupca",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Jura_Stublić_i_Film_-_Sjećam_se_prvog_poljupca-cut.mp3"),
+            audio: require("../assets/clips/Jura_Stublić_i_Film_-_Sjećam_se_prvog_poljupca-cut.mp3"),
           },
           2: {
             songs: [
@@ -166,7 +166,7 @@ export default {
             ],
             correctAnswer: "Doći ću ti u snovima",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Jura_Stublić_i_Film_-_Doći_ću_ti_u_snovima-cut.mp3"),
+            audio: require("../assets/clips/Jura_Stublić_i_Film_-_Doći_ću_ti_u_snovima-cut.mp3"),
           },
         };
       }
@@ -177,7 +177,7 @@ export default {
             songs: ["Vojko V", "Edo Maajka", "The Beat Fleet", "Ajs Nigrutin"],
             correctAnswer: "Vojko V",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Vojko_V_-_Ne_može-cut.mp3"),
+            audio: require("../assets/clips/Vojko_V_-_Ne_može-cut.mp3"),
           },
           1: {
             songs: [
@@ -188,13 +188,13 @@ export default {
             ],
             correctAnswer: "Esi mi dobar",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Bad_Copy_-_Esi_mi_dobar-cut.mp3"),
+            audio: require("../assets/clips/Bad_Copy_-_Esi_mi_dobar-cut.mp3"),
           },
           2: {
             songs: ["Vojko V", "The Beat Fleet", "Stoka", "Nered"],
             correctAnswer: "The Beat Fleet",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\The_Beat_Fleet_-_Malo_san_maka-cut.mp3"),
+            audio: require("../assets/clips/The_Beat_Fleet_-_Malo_san_maka-cut.mp3"),
           },
         };
       }
@@ -205,7 +205,7 @@ export default {
             songs: ["Kiše jesenje", "Kap po kap", "Marija", "Ja sam budućnost"],
             correctAnswer: "Kap po kap",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Divlje_jagode_-_Kap_po_kap-cut.mp3"),
+            audio: require("../assets/clips/Divlje_jagode_-_Kap_po_kap-cut.mp3"),
           },
           1: {
             songs: [
@@ -216,7 +216,7 @@ export default {
             ],
             correctAnswer: "Parni valjak",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Parni_valjak_-_Sve_još_miriše_na_nju-cut.mp3"),
+            audio: require("../assets/clips/Parni_valjak_-_Sve_još_miriše_na_nju-cut.mp3"),
           },
           2: {
             songs: [
@@ -227,7 +227,7 @@ export default {
             ],
             correctAnswer: "Previše suza u mom pivu",
             playerPointsEarned: 0,
-            audio: require("./..\\assets\\clips\\Prljavo_kazaliste_-_Previše_suza_u_mom_pivu-cut.mp3"),
+            audio: require("../assets/clips/Prljavo_kazaliste_-_Previše_suza_u_mom_pivu-cut.mp3"),
           },
         };
       }

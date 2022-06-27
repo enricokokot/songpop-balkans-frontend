@@ -13,7 +13,7 @@ export default {
           playerAnswer: "Marija",
           playerPointsEarned: 0,
           playerTimeAnswered: 3,
-          audio: require("./.\\assets\\clips\\Divlje_jagode_-_Kap_po_kap-cut.mp3"),
+          audio: require("./assets/clips/Divlje_jagode_-_Kap_po_kap-cut.mp3"),
         },
         1: {
           songs: [
@@ -26,7 +26,7 @@ export default {
           playerAnswer: "Parni valjak",
           playerPointsEarned: 40,
           playerTimeAnswered: 4,
-          audio: require("./.\\assets\\clips\\Parni_valjak_-_Sve_još_miriše_na_nju-cut.mp3"),
+          audio: require("./assets/clips/Parni_valjak_-_Sve_još_miriše_na_nju-cut.mp3"),
         },
         2: {
           songs: [
@@ -39,7 +39,7 @@ export default {
           playerAnswer: "Ja volim samo sebe",
           playerPointsEarned: 0,
           playerTimeAnswered: 2,
-          audio: require("./.\\assets\\clips\\Prljavo_kazaliste_-_Previše_suza_u_mom_pivu-cut.mp3"),
+          audio: require("./assets/clips/Prljavo_kazaliste_-_Previše_suza_u_mom_pivu-cut.mp3"),
         },
       },
       yourScore: 0,
