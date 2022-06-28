@@ -61,7 +61,7 @@ export default {
   }),
   methods: {
     goBack() {
-      this.$router.replace("/app2/duel");
+      this.$router.replace("/duel");
     },
   },
   mounted() {

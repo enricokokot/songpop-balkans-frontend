@@ -43,13 +43,13 @@ export default {
   }),
   methods: {
     goToPlay() {
-      this.$router.push("/app2/duel");
+      this.$router.push("/duel");
     },
     goToAchievements() {
-      this.$router.push("/app2/achievements");
+      this.$router.push("/achievements");
     },
     goToStore() {
-      this.$router.push("/app2/store");
+      this.$router.push("/store");
     },
   },
   mounted() {
