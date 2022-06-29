@@ -1,10 +1,19 @@
 <template>
   <v-container fill-height fluid>
-    <v-snackbar v-model="snackbar" :multi-line="multiLine">
-      {{ text }}
+    <v-snackbar v-model="snackbar1" :multi-line="multiLine">
+      {{ text1 }}
 
       <template v-slot:action="{ attrs }">
-        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar1 = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="snackbar2" :multi-line="multiLine">
+      {{ text2 }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar2 = false">
           Close
         </v-btn>
       </template>
@@ -54,10 +63,11 @@ export default {
     finalScore: 0,
     enemyFinalScore: 0,
     enemyPlayed: true,
-    achievementUnlocked: false,
     multiLine: true,
-    snackbar: false,
-    text: `Congratulations, you've earned the 'Earn a score of 250' achievement!`,
+    snackbar1: false,
+    snackbar2: false,
+    text1: `Congratulations, you've earned the 'Earn a score of 250' achievement!`,
+    text2: `Congratulations, you've earned the 'Earn a score of 300' achievement!`,
   }),
   methods: {
     goBack() {
@@ -99,13 +109,18 @@ export default {
         enemyPlayer.result[1] += 1;
         store.coins += 2;
       }
-      if (this.finalScore >= 250) {
-        store.achievements.find(
-          (achievement) => achievement.id === 3
-        ).progress = 1;
-        this.achievementUnlocked = true;
-        this.snackbar = true;
-      }
+    }
+    if (this.finalScore >= 250) {
+      store.achievements.find(
+        (achievement) => achievement.id === 3
+      ).progress = 1;
+      this.snackbar1 = true;
+    }
+    if (this.finalScore >= 300) {
+      store.achievements.find(
+        (achievement) => achievement.id === 4
+      ).progress = 1;
+      this.snackbar2 = true;
     }
   },
   computed: {
