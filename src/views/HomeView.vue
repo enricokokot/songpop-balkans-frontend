@@ -36,12 +36,21 @@
 </template>
 
 <script>
+import store from "@/store";
+
 export default {
   name: "HomeView",
   data: () => ({
-    //
+    currentUser: 1,
   }),
   methods: {
+    async fetchUserAchievements(userId) {
+      const achievementResponse = await fetch(
+        `http://localhost:3000/user/${userId}/achievement`
+      );
+      const achievementData = await achievementResponse.json();
+      return achievementData;
+    },
     goToPlay() {
       this.$router.push("/duel");
     },
@@ -52,8 +61,9 @@ export default {
       this.$router.push("/store");
     },
   },
-  mounted() {
-    //
+  async mounted() {
+    this.currentUser = store.currentUser;
+    store.achievements = await this.fetchUserAchievements(this.currentUser);
   },
   computed: {
     //

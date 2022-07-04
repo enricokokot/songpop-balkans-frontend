@@ -46,6 +46,7 @@ import store from "@/store";
 export default {
   name: "StoreView",
   data: () => ({
+    currentUser: 1,
     coins: 0,
     playlists: [],
     allPlaylists: [],
@@ -54,20 +55,50 @@ export default {
     goBack() {
       this.$router.back();
     },
-    buyPlaylist(playlist) {
-      if (store.coins >= playlist.price) {
-        store.coins -= playlist.price;
-        store.playlists.push(playlist.title);
-        this.fetchData();
-      }
+    async fetchUserCoins(userId) {
+      const CoinResponse = await fetch(
+        `http://localhost:3000/user/${userId}/coin`
+      );
+      const userCoinData = await CoinResponse.json();
+      return userCoinData.availableCoins;
     },
-    fetchData() {
-      this.coins = store.coins;
-      this.playlists = store.playlists;
-      this.allPlaylists = store.allPlaylists;
+    async fetchAllAvailablePlaylists(userId) {
+      const userPlaylistResponse = await fetch(
+        `http://localhost:3000/user/${userId}/playlist`
+      );
+      const userPlaylistData = await userPlaylistResponse.json();
+      return userPlaylistData;
+    },
+    async fetchAllPlaylists() {
+      const playlistResponse = await fetch(`http://localhost:3000/playlist`);
+      const playlistData = await playlistResponse.json();
+      return playlistData;
+    },
+    async buyPlaylist(playlist) {
+      const transactionResult = await fetch(
+        `http://localhost:3000/shop/playlist`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            playerId: this.currentUser,
+            playlistTitle: playlist.title,
+          }),
+        }
+      );
+      const transactionResultData = await transactionResult.json();
+      console.log(transactionResultData);
+      this.fetchData();
+    },
+    async fetchData() {
+      this.currentUser = store.currentUser;
+      this.coins = await this.fetchUserCoins(this.currentUser);
+      this.playlists = await this.fetchAllAvailablePlaylists(this.currentUser);
+      store.playlists = this.playlists;
+      this.allPlaylists = await this.fetchAllPlaylists();
     },
   },
-  mounted() {
+  async mounted() {
     this.fetchData();
   },
   computed: {

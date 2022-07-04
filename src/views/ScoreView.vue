@@ -73,8 +73,45 @@ export default {
     goBack() {
       this.$router.replace("/duel");
     },
+    async startADuel() {
+      const startADuelResponse = await fetch(
+        `http://localhost:3000/duel/start`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            challengerId: this.currentUser,
+            challengeTakerId: this.duelAgainst.id,
+            playlist: this.duelAgainst.playlist,
+            challengerScore: this.finalScore,
+            roundsData: this.duelAgainst.rounds,
+          }),
+        }
+      );
+    },
+    async endADuel() {
+      const startADuelResponse = await fetch(`http://localhost:3000/duel/end`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          duelId: this.duelAgainst.duelId,
+          chalengeeScore: this.finalScore,
+        }),
+      });
+    },
+    async updateAnAchievement(achievementId) {
+      const updateAchievmentResponse = await fetch(
+        `http://localhost:3000/user/${this.currentUser}/achievement/${achievementId}`,
+        {
+          method: "PATCH",
+        }
+      );
+      const updateAchievmentData = await updateAchievmentResponse.json();
+      return updateAchievmentData;
+    },
   },
-  mounted() {
+  async mounted() {
+    this.currentUser = store.currentUser;
     this.finalScore = store.duelAgainst.yourScore;
     this.duelAgainst = store.duelAgainst;
     const enemyFinalScoreToBe = [];
@@ -90,37 +127,24 @@ export default {
       0
     );
     this.enemyPlayed = enemyHasPlayed.reduce((prev, curr) => prev + curr, 0);
-    if (!this.enemyPlayed)
-      store.players.find((player) => player.id === this.duelAgainst.id).status =
-        "waiting";
-    else {
-      const enemyPlayer = store.players.find(
-        (player) => player.id === this.duelAgainst.id
-      );
-      enemyPlayer.status = "challenge";
+    if (!this.enemyPlayed) {
+      this.startADuel();
+    } else {
+      this.endADuel();
       if (this.finalScore > this.enemyFinalScore) {
-        enemyPlayer.result[0] += 1;
-        store.coins += 3;
-      } else if (this.finalScore < this.enemyFinalScore) {
-        enemyPlayer.result[1] += 1;
-        store.coins += 1;
-      } else {
-        enemyPlayer.result[0] += 1;
-        enemyPlayer.result[1] += 1;
-        store.coins += 2;
+        const achievementUpdate = await this.updateAnAchievement(0);
+        achievementUpdate.goalReached
+          ? console.log("goal reached!")
+          : console.log("achievement updated!");
       }
     }
     if (this.finalScore >= 250) {
-      store.achievements.find(
-        (achievement) => achievement.id === 3
-      ).progress = 1;
-      this.snackbar1 = true;
+      const achievementUpdate = await this.updateAnAchievement(3);
+      if (achievementUpdate.goalReached) this.snackbar1 = true;
     }
     if (this.finalScore >= 300) {
-      store.achievements.find(
-        (achievement) => achievement.id === 4
-      ).progress = 1;
-      this.snackbar2 = true;
+      const achievementUpdate = await this.updateAnAchievement(4);
+      if (achievementUpdate.goalReached) this.snackbar2 = true;
     }
   },
   computed: {

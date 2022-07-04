@@ -209,10 +209,18 @@ export default {
     totalPoints: 0,
     totalPointsPlayer: 0,
     audio: {},
+    globalPlaySound: {},
+    globalContext: {},
   }),
   methods: {
     goBack() {
       this.$router.back();
+    },
+    async fetchASongAudio(songId) {
+      const songAudioResponse = await fetch(
+        `http://localhost:3000/song/${songId}/audio`
+      );
+      return songAudioResponse;
     },
     answer(songId) {
       this.roundYourAnswer = songId;
@@ -221,9 +229,13 @@ export default {
         this.roundYourAnswer === this.roundCorrectAnswer
           ? this.gameTimer * 10
           : 0;
+      this.duelAgainst.rounds[this.currentRound].timeAnswered = this.gameTimer;
       this.gameTimer = 0;
+      this.duelAgainst.rounds[this.currentRound].pointsEarned =
+        this.roundPoints;
+      this.duelAgainst.rounds[this.currentRound].answer = this.roundYourAnswer;
     },
-    prepareForTheNextRound() {
+    async prepareForTheNextRound() {
       this.roundSongs = this.duelAgainst.rounds[this.currentRound].songs;
       this.roundCorrectAnswer =
         this.duelAgainst.rounds[this.currentRound].correctAnswer;
@@ -231,9 +243,26 @@ export default {
         this.duelAgainst.rounds[this.currentRound].playerAnswer;
       this.roundPlayerAnswerTime =
         this.duelAgainst.rounds[this.currentRound].playerTimeAnswered;
-      const songAudio = this.duelAgainst.rounds[this.currentRound].audio;
-      this.audio = new Audio(songAudio);
-      this.audio.play();
+      const songAudioId =
+        this.duelAgainst.rounds[this.currentRound].correctAnswerId;
+      const songAudio = await this.fetchASongAudio(songAudioId);
+      const ctx = new AudioContext();
+      let audio;
+      const arrayBuffer = await songAudio.arrayBuffer();
+      const decodedAudio = await ctx.decodeAudioData(arrayBuffer);
+      audio = decodedAudio;
+      this.playback(audio, ctx);
+    },
+    playback(audio, ctx) {
+      const playSound = ctx.createBufferSource();
+      playSound.buffer = audio;
+      playSound.connect(ctx.destination);
+      playSound.start(ctx.currentTime);
+      this.globalPlaySound = playSound;
+      this.globalContext = ctx;
+    },
+    stopback(globalPlaySound) {
+      globalPlaySound.stop();
     },
 
     nextRound() {
@@ -256,10 +285,11 @@ export default {
       }
     },
     stopSong() {
-      this.audio.pause();
+      this.stopback(this.globalPlaySound);
     },
   },
   mounted() {
+    // this.curretnUser = store.currentUser;
     this.duelAgainst = store.duelAgainst;
     this.prepareForTheNextRound();
   },
