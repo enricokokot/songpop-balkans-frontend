@@ -104,11 +104,7 @@ export default {
   async mounted() {
     this.currentUser = store.currentUser;
     this.duelAgainst = store.duelAgainst;
-    if (this.duelAgainst.playlist || this.duelAgainst.playlist === 0) {
-      this.duelAgainst.playlist = await this.fetchAPlaylist(
-        this.duelAgainst.playlist
-      );
-    } else {
+    if (!(this.duelAgainst.playlist || this.duelAgainst.playlist === 0)) {
       this.playlists = await this.fetchAllAvailablePlaylists(this.currentUser);
       store.playlists = this.playlists;
     }
