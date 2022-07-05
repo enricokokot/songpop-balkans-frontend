@@ -204,7 +204,7 @@ export default {
     roundYourAnswer: "",
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 10,
+    gameTimer: 11,
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,
@@ -280,7 +280,7 @@ export default {
         this.roundPoints = 0;
         this.answerGiven = false;
         this.gameTimePassed = false;
-        this.gameTimer = 10;
+        this.gameTimer = 11;
         this.prepareForTheNextRound();
       }
     },
