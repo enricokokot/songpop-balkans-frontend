@@ -67,7 +67,6 @@ const Users = {
     const everyPlayerOnThePageModified = everyPlayerOnThePage
       .filter((player) => player.id !== currentUser)
       .map((player) => {
-        console.log("player.time:", player.time);
         if (player.rounds && player.challengeTakerId === currentUser) {
           const duelStartTime = player.time
             ? moment(player.time).fromNow()
