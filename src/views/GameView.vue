@@ -32,7 +32,7 @@
             ><v-row
               v-if="gameTimer >= 0"
               class="align-center justify-center text-h5"
-              >{{ gameTimer }}</v-row
+              >{{ gameTimer / 10 }}</v-row
             >
             <v-row v-else class="align-center justify-center text-h5">0</v-row>
           </v-col>
@@ -206,7 +206,7 @@ export default {
     roundYourAnswer: "",
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 11,
+    gameTimer: 110,
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,
@@ -229,9 +229,7 @@ export default {
       this.roundYourAnswer = songId;
       this.answerGiven = !this.answerGiven;
       this.roundPoints =
-        this.roundYourAnswer === this.roundCorrectAnswer
-          ? this.gameTimer * 10
-          : 0;
+        this.roundYourAnswer === this.roundCorrectAnswer ? this.gameTimer : 0;
       this.duelAgainst.rounds[this.currentRound].timeAnswered = this.gameTimer;
       this.gameTimer = 0;
       this.duelAgainst.rounds[this.currentRound].pointsEarned =
@@ -283,7 +281,7 @@ export default {
         this.roundPoints = 0;
         this.answerGiven = false;
         this.gameTimePassed = false;
-        this.gameTimer = 11;
+        this.gameTimer = 110;
         this.prepareForTheNextRound();
       }
     },
@@ -312,7 +310,7 @@ export default {
         if (value > 0) {
           setTimeout(() => {
             this.gameTimer--;
-          }, 1000);
+          }, 100);
         }
         if (value === 0) {
           this.gameTimePassed = !this.gameTimePassed;
