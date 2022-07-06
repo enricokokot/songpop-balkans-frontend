@@ -20,8 +20,8 @@
               <v-col
                 ><v-container fill-height>
                   <v-row>{{ player.name }}</v-row>
-                  <v-row v-if="player.result[0] !== 0 && player.result[1] !== 0"
-                    >Yesterday</v-row
+                  <v-row v-if="player.duelStartTime">
+                    {{ player.duelStartTime }}</v-row
                   >
                 </v-container>
               </v-col>
@@ -84,6 +84,7 @@
 
 <script>
 import store from "@/store";
+import moment from "moment";
 
 export default {
   name: "PlayView",
@@ -155,6 +156,9 @@ export default {
       .filter((player) => player.id !== this.currentUser)
       .map((player) => {
         if (player.rounds && player.challengeTakerId === this.currentUser) {
+          const duelStartTime = player.time
+            ? moment(player.time).fromNow()
+            : "...";
           const idsSortedByOrder =
             this.currentUser > player.challengerId
               ? [player.challengerId, this.currentUser]
@@ -179,11 +183,15 @@ export default {
             rounds: player.rounds,
             duelId: player.id,
             result,
+            duelStartTime,
           };
         } else if (
           player.rounds &&
           player.challengeTakerId !== this.currentUser
         ) {
+          const duelStartTime = player.time
+            ? moment(player.time).fromNow()
+            : "...";
           const idsSortedByOrder =
             this.currentUser > player.challengeTakerId
               ? [player.challengeTakerId, this.currentUser]
@@ -205,6 +213,7 @@ export default {
             result: [player.playerOneTotalScore, player.playerTwoTotalScore],
             status: "waiting",
             result,
+            duelStartTime,
           };
         } else {
           const idsSortedByOrder =
