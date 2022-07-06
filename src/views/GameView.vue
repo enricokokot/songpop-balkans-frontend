@@ -7,12 +7,14 @@
           <v-col
             ><v-row class="align-center justify-center">
               <v-avatar color="primary" size="10vh">
-                <span class="white--text text-h5">{{
-                  "Ivan Merlić"
-                    .split(" ")
-                    .map((word) => word[0])
-                    .join("")
-                }}</span>
+                <span v-if="currentUser.name" class="white--text text-h5">
+                  {{
+                    currentUser.name
+                      .split(" ")
+                      .map((word) => word[0])
+                      .join("")
+                  }}
+                </span>
               </v-avatar>
             </v-row></v-col
           >
@@ -211,6 +213,7 @@ export default {
     audio: {},
     globalPlaySound: {},
     globalContext: {},
+    currentUser: 1,
   }),
   methods: {
     goBack() {
@@ -287,9 +290,16 @@ export default {
     stopSong() {
       this.stopback(this.globalPlaySound);
     },
+    async fetchCurrentUserName(userId) {
+      const userNameResponse = await fetch(
+        `http://localhost:3000/user/${userId}`
+      );
+      const userNameData = await userNameResponse.json();
+      return userNameData;
+    },
   },
-  mounted() {
-    // this.curretnUser = store.currentUser;
+  async mounted() {
+    this.currentUser = await this.fetchCurrentUserName(store.currentUser);
     this.duelAgainst = store.duelAgainst;
     this.prepareForTheNextRound();
   },
