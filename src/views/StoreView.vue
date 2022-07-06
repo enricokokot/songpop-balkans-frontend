@@ -42,6 +42,7 @@
 
 <script>
 import store from "@/store";
+import { Users, Playlists } from "@/services";
 
 export default {
   name: "StoreView",
@@ -55,45 +56,31 @@ export default {
     goBack() {
       this.$router.back();
     },
-    async fetchUserCoins(userId) {
-      const CoinResponse = await fetch(
-        `http://localhost:3000/user/${userId}/coin`
-      );
-      const userCoinData = await CoinResponse.json();
-      return userCoinData.availableCoins;
+    async fetchUserCoins() {
+      const coins = await Users.getCoins(this.currentUser);
+      return coins;
     },
-    async fetchAllAvailablePlaylists(userId) {
-      const userPlaylistResponse = await fetch(
-        `http://localhost:3000/user/${userId}/playlist`
-      );
-      const userPlaylistData = await userPlaylistResponse.json();
-      return userPlaylistData;
+    async fetchAllUserPlaylists() {
+      const usersPlaylists = await Users.getPlaylists(this.currentUser);
+      return usersPlaylists;
     },
     async fetchAllPlaylists() {
-      const playlistResponse = await fetch(`http://localhost:3000/playlist`);
-      const playlistData = await playlistResponse.json();
-      return playlistData;
+      const playlists = await Playlists.getAll();
+      return playlists;
     },
     async buyPlaylist(playlist) {
-      const transactionResult = await fetch(
-        `http://localhost:3000/shop/playlist`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            playerId: this.currentUser,
-            playlistTitle: playlist.title,
-          }),
-        }
-      );
-      const transactionResultData = await transactionResult.json();
-      console.log(transactionResultData);
+      const data = {
+        playerId: this.currentUser,
+        playlistTitle: playlist.title,
+      };
+      const response = await Playlists.buy(data);
+      console.log(response);
       this.fetchData();
     },
     async fetchData() {
       this.currentUser = store.currentUser;
-      this.coins = await this.fetchUserCoins(this.currentUser);
-      this.playlists = await this.fetchAllAvailablePlaylists(this.currentUser);
+      this.coins = await this.fetchUserCoins();
+      this.playlists = await this.fetchAllUserPlaylists();
       store.playlists = this.playlists;
       this.allPlaylists = await this.fetchAllPlaylists();
     },

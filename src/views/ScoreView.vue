@@ -55,6 +55,7 @@
 
 <script>
 import store from "@/store";
+import { Users, Duels } from "@/services";
 
 export default {
   name: "HomeView",
@@ -74,40 +75,30 @@ export default {
       this.$router.replace("/duel");
     },
     async startADuel() {
-      const startADuelResponse = await fetch(
-        `http://localhost:3000/duel/start`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            challengerId: this.currentUser,
-            challengeTakerId: this.duelAgainst.id,
-            playlist: this.duelAgainst.playlist,
-            challengerScore: this.finalScore,
-            roundsData: this.duelAgainst.rounds,
-          }),
-        }
-      );
+      const data = {
+        challengerId: this.currentUser,
+        challengeTakerId: this.duelAgainst.id,
+        playlist: this.duelAgainst.playlist,
+        challengerScore: this.finalScore,
+        roundsData: this.duelAgainst.rounds,
+      };
+      const response = await Duels.start(data);
+      return response;
     },
     async endADuel() {
-      const startADuelResponse = await fetch(`http://localhost:3000/duel/end`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          duelId: this.duelAgainst.duelId,
-          chalengeeScore: this.finalScore,
-        }),
-      });
+      const data = {
+        duelId: this.duelAgainst.duelId,
+        chalengeeScore: this.finalScore,
+      };
+      const response = await Duels.end(data);
+      return response;
     },
     async updateAnAchievement(achievementId) {
-      const updateAchievmentResponse = await fetch(
-        `http://localhost:3000/user/${this.currentUser}/achievement/${achievementId}`,
-        {
-          method: "PATCH",
-        }
+      const usersPlaylists = await Users.updateAchievement(
+        this.currentUser,
+        achievementId
       );
-      const updateAchievmentData = await updateAchievmentResponse.json();
-      return updateAchievmentData;
+      return usersPlaylists;
     },
   },
   async mounted() {

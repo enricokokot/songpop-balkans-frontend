@@ -37,6 +37,7 @@
 
 <script>
 import store from "@/store";
+import { Users } from "@/services";
 
 export default {
   name: "HomeView",
@@ -44,12 +45,9 @@ export default {
     currentUser: 1,
   }),
   methods: {
-    async fetchUserAchievements(userId) {
-      const achievementResponse = await fetch(
-        `http://localhost:3000/user/${userId}/achievement`
-      );
-      const achievementData = await achievementResponse.json();
-      return achievementData;
+    async fetchAllAchievements() {
+      const allAchievements = await Users.getAllAchievements(this.currentUser);
+      return allAchievements;
     },
     goToPlay() {
       this.$router.push("/duel");
@@ -63,7 +61,7 @@ export default {
   },
   async mounted() {
     this.currentUser = store.currentUser;
-    store.achievements = await this.fetchUserAchievements(this.currentUser);
+    store.achievements = await this.fetchAllAchievements();
   },
   computed: {
     //

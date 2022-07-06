@@ -84,7 +84,7 @@
 
 <script>
 import store from "@/store";
-import moment from "moment";
+import { Users, Duels } from "@/services";
 
 export default {
   name: "PlayView",
@@ -110,137 +110,41 @@ export default {
       this.$router.push("/");
     },
     async fetchAllPlayers() {
-      const playersResponse = await fetch("http://localhost:3000/user");
-      const playersData = await playersResponse.json();
-      return playersData;
+      const allPlayers = await Users.getAll();
+      return allPlayers;
     },
     async fetchAllDuels() {
-      const duelsResponse = await fetch(
-        `http://localhost:3000/duel/${this.currentUser}`
-      );
-      const duelsData = await duelsResponse.json();
-      return duelsData;
+      const allDuels = await Duels.getAll(this.currentUser);
+      return allDuels;
     },
-    async fetchAllUserRivalries() {
-      const userRivalriesResponse = await fetch(
-        `http://localhost:3000/user/${this.currentUser}/rivalry`
+    async fetchAllRivalries() {
+      const allRivalries = await Users.getAllRivalries(this.currentUser);
+      return allRivalries;
+    },
+    transformAllPlayers(allPlayers, allDuels, currentUser, allUserRivalries) {
+      const allPlayersTransformed = Users.transformAll(
+        allPlayers,
+        allDuels,
+        currentUser,
+        allUserRivalries
       );
-      const userRivalriesData = await userRivalriesResponse.json();
-      return userRivalriesData;
+      return allPlayersTransformed;
     },
   },
   async mounted() {
+    this.duelAgainst = store.duelAgainst;
     this.currentUser = store.currentUser;
+    const currentUser = this.currentUser;
+    this.allUserRivalries = await this.fetchAllRivalries();
+    const allUserRivalries = this.allUserRivalries;
     const allPlayers = await this.fetchAllPlayers();
     const allDuels = await this.fetchAllDuels();
-    this.allUserRivalries = await this.fetchAllUserRivalries();
-    const {
-      specificPlayerDuelsWhereHeIsTheChallenger,
-      specificPlayerDuelsWhereHeIsBeingChallenged,
-    } = allDuels;
-    const ids1 = specificPlayerDuelsWhereHeIsTheChallenger.map(
-      (duel) => duel.challengeTakerId
+    this.players = this.transformAllPlayers(
+      allPlayers,
+      allDuels,
+      currentUser,
+      allUserRivalries
     );
-    const ids2 = specificPlayerDuelsWhereHeIsBeingChallenged.map(
-      (duel) => duel.challengerId
-    );
-    const ids3 = ids1.concat(ids2);
-    const allPlayersFiltered = allPlayers.filter(
-      (player) => !ids3.includes(player.id)
-    );
-
-    const everyPlayerOnThePage = specificPlayerDuelsWhereHeIsBeingChallenged
-      .concat(specificPlayerDuelsWhereHeIsTheChallenger)
-      .concat(allPlayersFiltered);
-    const everyPlayerOnThePageModified = everyPlayerOnThePage
-      .filter((player) => player.id !== this.currentUser)
-      .map((player) => {
-        if (player.rounds && player.challengeTakerId === this.currentUser) {
-          const duelStartTime = player.time
-            ? moment(player.time).fromNow()
-            : "...";
-          const idsSortedByOrder =
-            this.currentUser > player.challengerId
-              ? [player.challengerId, this.currentUser]
-              : [this.currentUser, player.challengerId];
-          const wantedRivalry = this.allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
-          );
-          const result = wantedRivalry
-            ? this.currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player.challengerId,
-            name: allPlayers.find((user) => user.id === player.challengerId)
-              .name,
-            result: [player.playerTwoTotalScore, player.playerOneTotalScore],
-            status: "reply",
-            playlist: player.playlist,
-            rounds: player.rounds,
-            duelId: player.id,
-            result,
-            duelStartTime,
-          };
-        } else if (
-          player.rounds &&
-          player.challengeTakerId !== this.currentUser
-        ) {
-          const duelStartTime = player.time
-            ? moment(player.time).fromNow()
-            : "...";
-          const idsSortedByOrder =
-            this.currentUser > player.challengeTakerId
-              ? [player.challengeTakerId, this.currentUser]
-              : [this.currentUser, player.challengeTakerId];
-          const wantedRivalry = this.allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
-          );
-          const result = wantedRivalry
-            ? this.currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player.challengeTakerId,
-            name: allPlayers.find((user) => user.id === player.challengeTakerId)
-              .name,
-            result: [player.playerOneTotalScore, player.playerTwoTotalScore],
-            status: "waiting",
-            result,
-            duelStartTime,
-          };
-        } else {
-          const idsSortedByOrder =
-            this.currentUser > player.id
-              ? [player.id, this.currentUser]
-              : [this.currentUser, player.id];
-          const wantedRivalry = this.allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
-          );
-          const result = wantedRivalry
-            ? this.currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player.id,
-            name: player.name,
-            result: [0, 0],
-            status: "challenge",
-            result,
-          };
-        }
-      });
-    this.players = everyPlayerOnThePageModified;
-    this.duelAgainst = store.duelAgainst;
   },
   computed: {
     //

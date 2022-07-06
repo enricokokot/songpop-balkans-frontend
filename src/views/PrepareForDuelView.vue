@@ -61,6 +61,7 @@
 
 <script>
 import store from "@/store";
+import { Playlists, Users } from "@/services";
 
 export default {
   name: "PrepareForDuelView",
@@ -73,27 +74,14 @@ export default {
     goBack() {
       this.$router.back();
     },
-    async fetchAPlaylist(playlistId) {
-      const playlistResponse = await fetch(
-        `http://localhost:3000/playlist/${playlistId}`
-      );
-      const playlistData = await playlistResponse.json();
-      return playlistData;
-    },
-    async fetchAllAvailablePlaylists(userId) {
-      const userPlaylistResponse = await fetch(
-        `http://localhost:3000/user/${userId}/playlist`
-      );
-      const userPlaylistData = await userPlaylistResponse.json();
-      return userPlaylistData;
+    async fetchAllAvailablePlaylists() {
+      const usersPlaylists = await Users.getPlaylists(this.currentUser);
+      return usersPlaylists;
     },
     async generateAGame(playlistId) {
-      const generateGameResponse = await fetch(
-        `http://localhost:3000/game/${playlistId}`
-      );
-      const generateGameData = await generateGameResponse.json();
-      this.duelAgainst.rounds = generateGameData.roundsData;
-      this.duelAgainst.playlist = generateGameData.playlistId;
+      const game = await Playlists.generateGame(playlistId);
+      this.duelAgainst.rounds = game.roundsData;
+      this.duelAgainst.playlist = game.playlistId;
       store.duelAgainst = this.duelAgainst;
       this.$router.replace("/game");
     },
@@ -105,7 +93,7 @@ export default {
     this.currentUser = store.currentUser;
     this.duelAgainst = store.duelAgainst;
     if (!(this.duelAgainst.playlist || this.duelAgainst.playlist === 0)) {
-      this.playlists = await this.fetchAllAvailablePlaylists(this.currentUser);
+      this.playlists = await this.fetchAllAvailablePlaylists();
       store.playlists = this.playlists;
     }
   },

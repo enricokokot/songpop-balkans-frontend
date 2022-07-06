@@ -193,6 +193,7 @@
 
 <script>
 import store from "@/store";
+import { Users, Songs } from "@/services";
 
 export default {
   name: "GameView",
@@ -220,10 +221,8 @@ export default {
       this.$router.back();
     },
     async fetchASongAudio(songId) {
-      const songAudioResponse = await fetch(
-        `http://localhost:3000/song/${songId}/audio`
-      );
-      return songAudioResponse;
+      const songAudio = await Songs.getAudio(songId);
+      return songAudio;
     },
     answer(songId) {
       this.roundYourAnswer = songId;
@@ -249,8 +248,7 @@ export default {
       const songAudio = await this.fetchASongAudio(songAudioId);
       const ctx = new AudioContext();
       let audio;
-      const arrayBuffer = await songAudio.arrayBuffer();
-      const decodedAudio = await ctx.decodeAudioData(arrayBuffer);
+      const decodedAudio = await ctx.decodeAudioData(songAudio);
       audio = decodedAudio;
       this.playback(audio, ctx);
     },
@@ -288,16 +286,13 @@ export default {
     stopSong() {
       this.stopback(this.globalPlaySound);
     },
-    async fetchCurrentUserName(userId) {
-      const userNameResponse = await fetch(
-        `http://localhost:3000/user/${userId}`
-      );
-      const userNameData = await userNameResponse.json();
-      return userNameData;
+    async fetchCurrentUser() {
+      const user = await Users.getOne(store.currentUser);
+      return user;
     },
   },
   async mounted() {
-    this.currentUser = await this.fetchCurrentUserName(store.currentUser);
+    this.currentUser = await this.fetchCurrentUser();
     this.duelAgainst = store.duelAgainst;
     this.prepareForTheNextRound();
   },
