@@ -7,9 +7,9 @@
           <v-col
             ><v-row class="align-center justify-center">
               <v-avatar color="primary" size="10vh">
-                <span v-if="currentUser.name" class="white--text text-h5">
+                <span v-if="currentUser.username" class="white--text text-h5">
                   {{
-                    currentUser.name
+                    currentUser.username
                       .split(" ")
                       .map((word) => word[0])
                       .join("")
@@ -214,7 +214,7 @@ export default {
     audio: {},
     globalPlaySound: {},
     globalContext: {},
-    currentUser: "",
+    currentUser: {},
     userId: Auth.state.user.userId,
   }),
   methods: {
