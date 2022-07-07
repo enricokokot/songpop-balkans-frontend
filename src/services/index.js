@@ -137,8 +137,8 @@ const Users = {
               : [currentUser, player.challengeTakerId];
           const wantedRivalry = allUserRivalries.find(
             (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
+              rivalry.playerTwoId === idsSortedByOrder[1] &&
+              rivalry.playerOneId === idsSortedByOrder[0]
           );
           const result = wantedRivalry
             ? currentUser === wantedRivalry.playerOneId
