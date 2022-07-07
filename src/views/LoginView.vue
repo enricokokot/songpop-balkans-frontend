@@ -9,7 +9,13 @@
 <script>
 import LoginForm from "@/components/LoginForm.vue";
 import SigninForm from "@/components/SigninForm.vue";
+import { Auth } from "@/services";
+
 export default {
   components: { LoginForm, SigninForm },
+
+  data: () => ({
+    auth: Auth.state,
+  }),
 };
 </script>

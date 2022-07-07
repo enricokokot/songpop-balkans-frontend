@@ -3,8 +3,10 @@
     <h1 class="text-center">Login</h1>
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-text-field
-        v-model="email"
-        :rules="[rules.required]"
+        v-model="username"
+        :rules="[
+          /*rules.required*/
+        ]"
         label="E-mail"
         required
       ></v-text-field>
@@ -12,7 +14,7 @@
       <v-text-field
         v-model="password"
         :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-        :rules="[rules.required, rules.min]"
+        :rules="[,/*rules.required rules.min*/]"
         :type="show ? 'text' : 'password'"
         label="Password"
         hint="At least 8 characters"
@@ -21,12 +23,21 @@
       ></v-text-field>
 
       <v-container class="d-flex flex-column justify-start">
-        <v-btn
+        <!-- <v-btn
           :disabled="!valid"
           color="transparent"
           class="success--text ma-1"
           :elevation="0"
           @click="validate"
+        >
+          Log in
+        </v-btn> -->
+        <v-btn
+          :disabled="!valid"
+          color="transparent"
+          class="success--text ma-1"
+          :elevation="0"
+          @click="login"
         >
           Log in
         </v-btn>
@@ -54,29 +65,35 @@
 </template>
 
 <script>
+import { Auth } from "@/services";
+
 export default {
   data: () => ({
     show: false,
     valid: true,
-    email: "",
+    username: "",
     emailRules: [
       (v) => !!v || "E-mail is required",
       (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
     ],
     password: "",
-    passwordRules: [
-      (v) => !!v || "Password is required",
-      (v) =>
-        (v && v.length >= 8) || "Password must be at least 8 characters long",
-    ],
-    rules: {
-      required: (value) => !!value || "Required.",
-      min: (v) => v.length >= 8 || "Min 8 characters",
-      emailMatch: () => `The email and password you entered don't match`,
-    },
+    // passwordRules: [
+    //   (v) => !!v || "Password is required",
+    //   (v) =>
+    //     (v && v.length >= 8) || "Password must be at least 8 characters long",
+    // ],
+    // rules: {
+    //   required: (value) => !!value || "Required.",
+    //   min: (v) => v.length >= 8 || "Min 8 characters",
+    //   emailMatch: () => `The email and password you entered don't match`,
+    // },
   }),
 
   methods: {
+    async login() {
+      const success = await Auth.login(this.username, this.password);
+      success && this.$router.push("/home");
+    },
     validate() {
       if (this.$refs.form.validate()) this.$router.push("/home");
     },

@@ -61,21 +61,21 @@
 
 <script>
 import store from "@/store";
-import { Playlists, Users } from "@/services";
+import { Auth, Users, Playlists } from "@/services";
 
 export default {
   name: "PrepareForDuelView",
   data: () => ({
-    currentUser: 1,
     duelAgainst: {},
     playlists: [],
+    userId: Auth.state.user.userId,
   }),
   methods: {
     goBack() {
       this.$router.back();
     },
     async fetchAllAvailablePlaylists() {
-      const usersPlaylists = await Users.getPlaylists(this.currentUser);
+      const usersPlaylists = await Users.getPlaylists(this.userId);
       return usersPlaylists;
     },
     async generateAGame(playlistId) {
@@ -90,7 +90,6 @@ export default {
     },
   },
   async mounted() {
-    this.currentUser = store.currentUser;
     this.duelAgainst = store.duelAgainst;
     if (!(this.duelAgainst.playlist || this.duelAgainst.playlist === 0)) {
       this.playlists = await this.fetchAllAvailablePlaylists();

@@ -42,12 +42,12 @@
 
 <script>
 import store from "@/store";
-import { Users, Playlists } from "@/services";
+import { Auth, Users, Playlists } from "@/services";
 
 export default {
   name: "StoreView",
   data: () => ({
-    currentUser: 1,
+    userId: Auth.state.user.userId,
     coins: 0,
     playlists: [],
     allPlaylists: [],
@@ -57,11 +57,11 @@ export default {
       this.$router.back();
     },
     async fetchUserCoins() {
-      const coins = await Users.getCoins(this.currentUser);
+      const coins = await Users.getCoins(this.userId);
       return coins;
     },
     async fetchAllUserPlaylists() {
-      const usersPlaylists = await Users.getPlaylists(this.currentUser);
+      const usersPlaylists = await Users.getPlaylists(this.userId);
       return usersPlaylists;
     },
     async fetchAllPlaylists() {
@@ -70,7 +70,7 @@ export default {
     },
     async buyPlaylist(playlist) {
       const data = {
-        playerId: this.currentUser,
+        playerId: this.userId,
         playlistTitle: playlist.title,
       };
       const response = await Playlists.buy(data);
@@ -78,7 +78,6 @@ export default {
       this.fetchData();
     },
     async fetchData() {
-      this.currentUser = store.currentUser;
       this.coins = await this.fetchUserCoins();
       this.playlists = await this.fetchAllUserPlaylists();
       store.playlists = this.playlists;

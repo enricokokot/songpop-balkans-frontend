@@ -55,7 +55,7 @@
 
 <script>
 import store from "@/store";
-import { Users, Duels } from "@/services";
+import { Auth, Users, Duels } from "@/services";
 
 export default {
   name: "HomeView",
@@ -69,6 +69,7 @@ export default {
     snackbar2: false,
     text1: `Congratulations, you've earned the 'Earn a score of 250' achievement!`,
     text2: `Congratulations, you've earned the 'Earn a score of 300' achievement!`,
+    userId: Auth.state.user.userId,
   }),
   methods: {
     goBack() {
@@ -76,7 +77,7 @@ export default {
     },
     async startADuel() {
       const data = {
-        challengerId: this.currentUser,
+        challengerId: this.userId,
         challengeTakerId: this.duelAgainst.id,
         playlist: this.duelAgainst.playlist,
         challengerScore: this.finalScore,
@@ -95,14 +96,13 @@ export default {
     },
     async updateAnAchievement(achievementId) {
       const usersPlaylists = await Users.updateAchievement(
-        this.currentUser,
+        this.userId,
         achievementId
       );
       return usersPlaylists;
     },
   },
   async mounted() {
-    this.currentUser = store.currentUser;
     this.finalScore = store.duelAgainst.yourScore;
     this.duelAgainst = store.duelAgainst;
     const enemyFinalScoreToBe = [];

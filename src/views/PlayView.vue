@@ -84,12 +84,12 @@
 
 <script>
 import store from "@/store";
-import { Users, Duels } from "@/services";
+import { Auth, Users, Duels } from "@/services";
 
 export default {
   name: "PlayView",
   data: () => ({
-    currentUser: 1,
+    userId: Auth.state.user.userId,
     players: [],
     duelAgainst: {},
     allUserRivalries: [],
@@ -107,18 +107,18 @@ export default {
       playerBeingQuit.status = "challenge";
     },
     goBack() {
-      this.$router.push("/");
+      this.$router.push("/home");
     },
     async fetchAllPlayers() {
       const allPlayers = await Users.getAll();
       return allPlayers;
     },
     async fetchAllDuels() {
-      const allDuels = await Duels.getAll(this.currentUser);
+      const allDuels = await Duels.getAll(this.userId);
       return allDuels;
     },
     async fetchAllRivalries() {
-      const allRivalries = await Users.getAllRivalries(this.currentUser);
+      const allRivalries = await Users.getAllRivalries(this.userId);
       return allRivalries;
     },
     transformAllPlayers(allPlayers, allDuels, currentUser, allUserRivalries) {
@@ -133,8 +133,7 @@ export default {
   },
   async mounted() {
     this.duelAgainst = store.duelAgainst;
-    this.currentUser = store.currentUser;
-    const currentUser = this.currentUser;
+    const currentUser = this.userId;
     this.allUserRivalries = await this.fetchAllRivalries();
     const allUserRivalries = this.allUserRivalries;
     const allPlayers = await this.fetchAllPlayers();

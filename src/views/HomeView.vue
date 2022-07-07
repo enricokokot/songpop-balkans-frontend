@@ -37,16 +37,17 @@
 
 <script>
 import store from "@/store";
-import { Users } from "@/services";
+import { Auth, Users } from "@/services";
 
 export default {
   name: "HomeView",
   data: () => ({
-    currentUser: 1,
+    userId: Auth.state.user.userId,
+    auth: Auth.authenticated,
   }),
   methods: {
     async fetchAllAchievements() {
-      const allAchievements = await Users.getAllAchievements(this.currentUser);
+      const allAchievements = await Users.getAllAchievements(this.userId);
       return allAchievements;
     },
     goToPlay() {
@@ -60,7 +61,7 @@ export default {
     },
   },
   async mounted() {
-    this.currentUser = store.currentUser;
+    this.user = store.currentUser;
     store.achievements = await this.fetchAllAchievements();
   },
   computed: {

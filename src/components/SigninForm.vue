@@ -29,12 +29,21 @@
       ></v-select>
 
       <v-container class="d-flex flex-column justify-start">
-        <v-btn
+        <!-- <v-btn
           :disabled="!valid"
           color="transparent"
           class="success--text ma-1"
           :elevation="0"
           @click="validate"
+        >
+          Sign in
+        </v-btn> -->
+        <v-btn
+          :disabled="!valid"
+          color="transparent"
+          class="success--text ma-1"
+          :elevation="0"
+          @click="register"
         >
           Sign in
         </v-btn>
@@ -62,6 +71,8 @@
 </template>
 
 <script>
+import { Auth, Users } from "@/services";
+
 export default {
   data: () => ({
     show: false,
@@ -78,7 +89,7 @@ export default {
         (v && v.length >= 8) || "Password must be at least 8 characters long",
     ],
     select: null,
-    genres: ["Rock", "Pop", "Hip-Hop", "Metal"],
+    genres: ["Rock", "Folk"],
     rules: {
       required: (value) => !!value || "Required.",
       min: (v) => v.length >= 8 || "Min 8 characters",
@@ -87,9 +98,20 @@ export default {
   }),
 
   methods: {
-    validate() {
-      if (this.$refs.form.validate()) this.$router.push("/about");
+    async register() {
+      const data = {
+        username: this.email,
+        password: this.password,
+        playlist: this.select,
+      };
+      const registered = await Users.register(data);
+      console.log("registered:", registered);
+      const success = await Auth.login(this.email, this.password);
+      success && this.$router.push("/home");
     },
+    // validate() {
+    //   if (this.$refs.form.validate()) this.$router.push("/about");
+    // },
     reset() {
       this.$refs.form.reset();
     },

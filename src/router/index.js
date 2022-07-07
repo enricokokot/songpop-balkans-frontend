@@ -9,6 +9,7 @@ import PrepareForDuelView from "../views/PrepareForDuelView.vue";
 import GameView from "../views/GameView.vue";
 import ScoreView from "../views/ScoreView.vue";
 import TemplateView from "../views/TemplateView.vue";
+import { Auth } from "@/services";
 
 Vue.use(VueRouter);
 
@@ -22,7 +23,7 @@ const routes = [
     },
   },
   {
-    path: "/",
+    path: "/home",
     name: "home",
     component: HomeView,
   },
@@ -70,6 +71,17 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const publicPages = "/login";
+  const authRequired = !publicPages.includes(to.path);
+  const user = Auth.getUser();
+
+  if (authRequired && !user) {
+    return next("/login");
+  }
+  next();
 });
 
 export default router;

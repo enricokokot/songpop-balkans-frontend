@@ -193,7 +193,7 @@
 
 <script>
 import store from "@/store";
-import { Users, Songs } from "@/services";
+import { Auth, Users, Songs } from "@/services";
 
 export default {
   name: "GameView",
@@ -214,7 +214,8 @@ export default {
     audio: {},
     globalPlaySound: {},
     globalContext: {},
-    currentUser: 1,
+    currentUser: "",
+    userId: Auth.state.user.userId,
   }),
   methods: {
     goBack() {
@@ -287,7 +288,7 @@ export default {
       this.stopback(this.globalPlaySound);
     },
     async fetchCurrentUser() {
-      const user = await Users.getOne(store.currentUser);
+      const user = await Users.getOne(this.userId);
       return user;
     },
   },
