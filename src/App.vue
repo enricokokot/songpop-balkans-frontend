@@ -54,7 +54,7 @@ export default {
   transition: opacity 0.1s, transform 0.1s;
 }
 .slide-enter,
-slide-leave-to {
+.slide-leave-to {
   opacity: 0;
   transform: translateX(-30%);
 }
