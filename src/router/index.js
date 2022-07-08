@@ -8,7 +8,11 @@ import StoreView from "../views/StoreView.vue";
 import PrepareForDuelView from "../views/PrepareForDuelView.vue";
 import GameView from "../views/GameView.vue";
 import ScoreView from "../views/ScoreView.vue";
+import LoadingView from "../views/LoadingView.vue";
 import TemplateView from "../views/TemplateView.vue";
+import GameAnswers from "../components/GameAnswers.vue";
+import GameAnswers2 from "../components/GameAnswers2.vue";
+import GameAnswers3 from "../components/GameAnswers3.vue";
 import { Auth } from "@/services";
 
 Vue.use(VueRouter);
@@ -38,9 +42,34 @@ const routes = [
     component: PrepareForDuelView,
   },
   {
+    path: "/duel/loading",
+    name: "loading",
+    component: LoadingView,
+  },
+  {
     path: "/game",
     name: "game",
     component: GameView,
+    children: [
+      {
+        path: "round1",
+        name: "round1",
+        props: true,
+        component: GameAnswers,
+      },
+      {
+        path: "round2",
+        name: "round2",
+        props: true,
+        component: GameAnswers2,
+      },
+      {
+        path: "round3",
+        name: "round3",
+        props: true,
+        component: GameAnswers3,
+      },
+    ],
     meta: {
       hideNavbar: true,
     },

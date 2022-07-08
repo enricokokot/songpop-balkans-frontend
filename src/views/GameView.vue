@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height fluid>
-    <v-row class="align-center justify-center">
+    <v-row class="align-center justify-center" style="height: 200px">
       <v-col>
         <!-- game status area-->
         <v-row class="align-center justify-center">
@@ -77,102 +77,14 @@
           <h4 v-else>Important game info shown here</h4>
         </v-row>
         <!-- answers area -->
+      </v-col>
+    </v-row>
+    <v-row class="align-center justify-center" style="height: 200px">
+      <v-col>
         <v-row class="align-center justify-center">
-          <v-col>
-            <v-row
-              v-for="song in roundSongs"
-              :key="song"
-              class="justify-center"
-            >
-              <!-- button assignment -->
-              <v-badge
-                :value="answerGiven && song === roundYourAnswer"
-                avatar
-                bordered
-                overlap
-                left
-                offset-x="20"
-                offset-y="20"
-              >
-                <template v-slot:badge>
-                  <v-avatar color="primary">
-                    <span v-if="currentUser.username">
-                      {{
-                        currentUser.username
-                          .split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                      }}
-                    </span>
-                  </v-avatar>
-                </template>
-                <v-badge
-                  :value="
-                    gameTimer <= roundPlayerAnswerTime &&
-                    song === roundPlayerAnswer
-                  "
-                  avatar
-                  bordered
-                  overlap
-                  offset-x="20"
-                  offset-y="20"
-                >
-                  <template v-slot:badge>
-                    <v-avatar color="primary">
-                      <span v-if="currentUser.username">
-                        {{
-                          duelAgainst.name
-                            .split(" ")
-                            .map((word) => word[0])
-                            .join("")
-                        }}
-                      </span>
-                    </v-avatar>
-                  </template>
-                  <v-btn
-                    x-large
-                    class="ma-2"
-                    :color="
-                      (answerGiven || gameTimer <= 0) &&
-                      song === roundCorrectAnswer
-                        ? 'success'
-                        : 'primary'
-                    "
-                    style="width: 300px"
-                    @click="isClickable && answer(song)"
-                    >{{ song }}</v-btn
-                  >
-                </v-badge>
-              </v-badge>
-            </v-row>
-          </v-col>
-        </v-row>
-        <!-- options area (to be deleted) -->
-        <v-row class="align-center justify-center">
-          <v-col>
-            <v-row class="align-center justify-center mt-2">
-              <v-btn
-                x-large
-                class="ma-2"
-                color="primary"
-                @click="nextRound()"
-                style="width: 300px"
-                :disabled="!gameTimePassed"
-                >NEXT ROUND</v-btn
-              >
-            </v-row>
-            <v-row class="align-center justify-center">
-              <v-btn
-                x-large
-                class="ma-2"
-                color="error"
-                @click="goBack()"
-                style="width: 300px"
-                :disabled="!(answerGiven || gameTimePassed)"
-                >QUIT</v-btn
-              >
-            </v-row>
-          </v-col>
+          <transition name="slide" mode="out-in">
+            <router-view @eventname="answer" />
+          </transition>
         </v-row>
       </v-col>
     </v-row>
@@ -201,17 +113,10 @@ export default {
     totalPointsPlayer: 0,
     currentUser: {},
     userId: Auth.state.user.userId,
-    ctx: {},
-    currGain: {},
-    gainNode: {},
   }),
   methods: {
     goBack() {
       this.$router.back();
-    },
-    async fetchASongAudio(songId) {
-      const songAudio = await Songs.getAudio(songId);
-      return songAudio;
     },
     answer(songId) {
       this.roundYourAnswer = songId;
@@ -234,34 +139,8 @@ export default {
         this.duelAgainst.rounds[this.currentRound].playerTimeAnswered;
       const songAudioId =
         this.duelAgainst.rounds[this.currentRound].correctAnswerId;
-      const songAudio = await this.fetchASongAudio(songAudioId);
-      // const songAudio = store.songAudios[this.currentRound];
-      const ctx = new AudioContext();
-      const decodedAudio = await ctx.decodeAudioData(songAudio);
-      const source = ctx.createBufferSource();
-      source.buffer = decodedAudio;
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = 0.5;
-      let currGain = gainNode.gain.value;
-      source.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      this.gainNode = gainNode;
-      this.currGain = currGain;
-      this.ctx = ctx;
-      this.playSong(source, ctx);
-    },
-    playSong(source) {
-      source.start();
-    },
-    stopSong() {
-      this.currGain = 0;
-      this.gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.ctx.currentTime + 5
-      );
     },
     nextRound() {
-      this.stopSong();
       this.totalPointsPlayer =
         this.totalPointsPlayer +
         this.duelAgainst.rounds[this.currentRound].playerPointsEarned;
@@ -285,12 +164,16 @@ export default {
     },
   },
   async mounted() {
+    this.$router.replace({
+      name: "round1",
+      params: {},
+    });
     this.currentUser = await this.fetchCurrentUser();
     this.duelAgainst = store.duelAgainst;
     this.prepareForTheNextRound();
   },
   computed: {
-    isClickable() {
+    roundIsOver() {
       return this.gameTimer > 0 && !this.answerGiven;
     },
   },
@@ -304,11 +187,26 @@ export default {
         }
         if (value === 0) {
           this.gameTimePassed = !this.gameTimePassed;
-          this.stopSong();
         }
       },
       immediate: true,
     },
+    roundIsOver(roundIsNotOver, roundIsOver) {
+      roundIsOver && setTimeout(() => this.nextRound(), 2000);
+    },
   },
 };
 </script>
+
+<style>
+/* slide */
+.slide-enter-active,
+.slide-leave-active {
+  transition: opacity 0.5s, transform 0.5s;
+}
+.slide-enter,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30%);
+}
+</style>
