@@ -8,7 +8,7 @@ import StoreView from "../views/StoreView.vue";
 import PrepareForDuelView from "../views/PrepareForDuelView.vue";
 import GameView from "../views/GameView.vue";
 import ScoreView from "../views/ScoreView.vue";
-import LoadingView from "../views/LoadingView.vue";
+// import LoadingView from "../views/LoadingView.vue";
 import TemplateView from "../views/TemplateView.vue";
 import GameAnswers from "../components/GameAnswers.vue";
 import GameAnswers2 from "../components/GameAnswers2.vue";
@@ -41,11 +41,11 @@ const routes = [
     name: "start",
     component: PrepareForDuelView,
   },
-  {
-    path: "/duel/loading",
-    name: "loading",
-    component: LoadingView,
-  },
+  // {
+  //   path: "/duel/loading",
+  //   name: "loading",
+  //   component: LoadingView,
+  // },
   {
     path: "/game",
     name: "game",
