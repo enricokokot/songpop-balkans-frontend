@@ -20,7 +20,7 @@ Service.interceptors.request.use((request) => {
 
 Service.interceptors.response.use(
   (response) => {
-    console.log("Interceptor", response);
+    // console.log("Interceptor", response);
     return response;
   },
   (error) => {
