@@ -7,7 +7,7 @@
           color="primary"
           class="ma-2"
           @click="goToPlay()"
-          width="15%"
+          style="width: 300px"
           >PLAY</v-btn
         >
       </v-row>
@@ -17,7 +17,7 @@
           color="primary"
           class="ma-2"
           @click="goToAchievements()"
-          width="15%"
+          style="width: 300px"
           >ACHIEVEMENTS</v-btn
         >
       </v-row>
@@ -27,7 +27,7 @@
           color="primary"
           class="ma-2"
           @click="goToStore()"
-          width="15%"
+          style="width: 300px"
           >STORE</v-btn
         >
       </v-row>
