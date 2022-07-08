@@ -211,11 +211,11 @@ export default {
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,
-    audio: {},
-    globalPlaySound: {},
-    globalContext: {},
     currentUser: {},
     userId: Auth.state.user.userId,
+    ctx: {},
+    currGain: {},
+    gainNode: {},
   }),
   methods: {
     goBack() {
@@ -247,24 +247,31 @@ export default {
       const songAudioId =
         this.duelAgainst.rounds[this.currentRound].correctAnswerId;
       const songAudio = await this.fetchASongAudio(songAudioId);
+      // const songAudio = store.songAudios[this.currentRound];
       const ctx = new AudioContext();
-      let audio;
       const decodedAudio = await ctx.decodeAudioData(songAudio);
-      audio = decodedAudio;
-      this.playback(audio, ctx);
+      const source = ctx.createBufferSource();
+      source.buffer = decodedAudio;
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = 0.5;
+      let currGain = gainNode.gain.value;
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      this.gainNode = gainNode;
+      this.currGain = currGain;
+      this.ctx = ctx;
+      this.playSong(source, ctx);
     },
-    playback(audio, ctx) {
-      const playSound = ctx.createBufferSource();
-      playSound.buffer = audio;
-      playSound.connect(ctx.destination);
-      playSound.start(ctx.currentTime);
-      this.globalPlaySound = playSound;
-      this.globalContext = ctx;
+    playSong(source) {
+      source.start();
     },
-    stopback(globalPlaySound) {
-      globalPlaySound.stop();
+    stopSong() {
+      this.currGain = 0;
+      this.gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.ctx.currentTime + 5
+      );
     },
-
     nextRound() {
       this.stopSong();
       this.totalPointsPlayer =
@@ -283,9 +290,6 @@ export default {
         this.gameTimer = 110;
         this.prepareForTheNextRound();
       }
-    },
-    stopSong() {
-      this.stopback(this.globalPlaySound);
     },
     async fetchCurrentUser() {
       const user = await Users.getOne(this.userId);
