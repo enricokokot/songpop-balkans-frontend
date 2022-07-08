@@ -2,6 +2,7 @@
   <v-container fill-height fluid>
     <v-row class="align-center justify-center">
       <v-col>
+        <!-- game status area-->
         <v-row class="align-center justify-center">
           <v-spacer></v-spacer>
           <v-col
@@ -50,11 +51,13 @@
           >
           <v-spacer></v-spacer>
         </v-row>
+        <!-- warning area -->
         <v-row class="align-center justify-center">
           <h1 class="red--text ma-6">
             Moving off this screen can cause bugs, proceed at your own peril
           </h1></v-row
         >
+        <!-- info area -->
         <v-row class="align-center justify-center ma-6">
           <h4
             v-if="
@@ -73,114 +76,99 @@
           <h4 v-else-if="gameTimer <= 0">Time's up!</h4>
           <h4 v-else>Important game info shown here</h4>
         </v-row>
+        <!-- answers area -->
         <v-row class="align-center justify-center">
           <v-col>
             <v-row
               v-for="song in roundSongs"
               :key="song"
-              class="align-center justify-center"
+              class="justify-center"
             >
-              <v-btn
-                v-if="
-                  !answerGiven &&
-                  song === roundPlayerAnswer &&
-                  gameTimer <= roundPlayerAnswerTime &&
-                  gameTimer !== 0
-                "
-                x-large
-                class="ma-2"
-                color="warning"
-                @click="answer(song)"
-                width="25%"
-                >{{ song }}</v-btn
+              <!-- button assignment -->
+              <v-badge
+                :value="answerGiven && song === roundYourAnswer"
+                avatar
+                bordered
+                overlap
+                left
+                offset-x="20"
+                offset-y="20"
               >
-              <v-btn
-                v-else-if="!answerGiven && !gameTimePassed"
-                x-large
-                class="ma-2"
-                color="primary"
-                @click="answer(song)"
-                width="25%"
-                >{{ song }}</v-btn
-              >
-              <v-btn
-                v-else-if="
-                  (answerGiven || gameTimePassed) && song === roundCorrectAnswer
-                "
-                x-large
-                class="ma-2"
-                color="success"
-                width="25%"
-                >{{ song }}</v-btn
-              >
-              <v-btn
-                v-else-if="
-                  (answerGiven || gameTimePassed) && song === roundPlayerAnswer
-                "
-                x-large
-                class="ma-2"
-                color="warning"
-                width="25%"
-                >{{ song }}</v-btn
-              >
-              <v-btn
-                v-else-if="
-                  (answerGiven || gameTimePassed) && song === roundYourAnswer
-                "
-                x-large
-                class="ma-2"
-                color="error"
-                width="25%"
-                >{{ song }}</v-btn
-              >
-              <v-btn
-                v-else
-                x-large
-                class="ma-2"
-                color="primary"
-                disabled
-                width="25%"
-                >{{ song }}</v-btn
-              >
+                <template v-slot:badge>
+                  <v-avatar color="primary">
+                    <span v-if="currentUser.username">
+                      {{
+                        currentUser.username
+                          .split(" ")
+                          .map((word) => word[0])
+                          .join("")
+                      }}
+                    </span>
+                  </v-avatar>
+                </template>
+                <v-badge
+                  :value="
+                    gameTimer <= roundPlayerAnswerTime &&
+                    song === roundPlayerAnswer
+                  "
+                  avatar
+                  bordered
+                  overlap
+                  offset-x="20"
+                  offset-y="20"
+                >
+                  <template v-slot:badge>
+                    <v-avatar color="primary">
+                      <span v-if="currentUser.username">
+                        {{
+                          duelAgainst.name
+                            .split(" ")
+                            .map((word) => word[0])
+                            .join("")
+                        }}
+                      </span>
+                    </v-avatar>
+                  </template>
+                  <v-btn
+                    x-large
+                    class="ma-2"
+                    :color="
+                      (answerGiven || gameTimer <= 0) &&
+                      song === roundCorrectAnswer
+                        ? 'success'
+                        : 'primary'
+                    "
+                    style="width: 300px"
+                    @click="isClickable && answer(song)"
+                    >{{ song }}</v-btn
+                  >
+                </v-badge>
+              </v-badge>
             </v-row>
-            <v-row class="align-center justify-center mt-8">
+          </v-col>
+        </v-row>
+        <!-- options area (to be deleted) -->
+        <v-row class="align-center justify-center">
+          <v-col>
+            <v-row class="align-center justify-center mt-2">
               <v-btn
-                v-if="gameTimePassed"
                 x-large
                 class="ma-2"
                 color="primary"
                 @click="nextRound()"
-                width="25%"
-                >NEXT ROUND</v-btn
-              >
-              <v-btn
-                v-else
-                x-large
-                class="ma-2"
-                width="25%"
-                color="primary"
-                disabled
+                style="width: 300px"
+                :disabled="!gameTimePassed"
                 >NEXT ROUND</v-btn
               >
             </v-row>
-            <v-row class="align-center justify-center"
-              ><v-btn
-                v-if="answerGiven || gameTimePassed"
-                x-large
-                class="ma-2"
-                color="error"
-                @click="goBack()"
-                width="25%"
-                >QUIT</v-btn
-              >
+            <v-row class="align-center justify-center">
               <v-btn
-                v-else
                 x-large
                 class="ma-2"
                 color="error"
                 @click="goBack()"
-                width="25%"
-                disabled
+                style="width: 300px"
+                :disabled="!(answerGiven || gameTimePassed)"
                 >QUIT</v-btn
               >
             </v-row>
@@ -302,7 +290,9 @@ export default {
     this.prepareForTheNextRound();
   },
   computed: {
-    //
+    isClickable() {
+      return this.gameTimer > 0 && !this.answerGiven;
+    },
   },
   watch: {
     gameTimer: {
