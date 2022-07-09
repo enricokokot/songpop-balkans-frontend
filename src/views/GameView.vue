@@ -117,11 +117,7 @@ export default {
       this.totalPointsPlayer = Object.keys(this.duelAgainst.rounds)
         .filter((duel) => duel <= this.currentRound)
         .map((key) => this.duelAgainst.rounds[key].playerPointsEarned)
-        .reduce(
-          (prev, curr) => prev + curr,
-
-          0
-        );
+        .reduce((prev, curr) => prev + curr, 0);
       this.duelAgainst.rounds[this.currentRound].timeAnswered = this.gameTimer;
       this.gameTimer = 0;
       this.duelAgainst.rounds[this.currentRound].pointsEarned =
