@@ -14,7 +14,7 @@
           </span>
         </v-avatar>
       </v-flex>
-      <v-flex fill-height md2 text-center class="green"
+      <v-flex fill-height md2 text-center
         ><h3>Round {{ currentRound + 1 }} of 3</h3></v-flex
       >
       <v-flex fill-height md4 text-center>
