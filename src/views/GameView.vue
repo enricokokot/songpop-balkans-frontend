@@ -1,99 +1,87 @@
 <template>
-  <v-container fill-height fluid>
-    <v-row class="align-center justify-center" style="height: 200px">
-      <v-col>
-        <!-- game status area-->
-        <v-row class="align-center justify-center">
-          <v-spacer></v-spacer>
-          <v-col
-            ><v-row class="align-center justify-center">
-              <v-avatar color="primary" size="10vh">
-                <span v-if="currentUser.username" class="white--text text-h5">
-                  {{
-                    currentUser.username
-                      .split(" ")
-                      .map((word) => word[0])
-                      .join("")
-                  }}
-                </span>
-              </v-avatar>
-            </v-row></v-col
-          >
-          <v-col
-            ><v-row class="align-center justify-center text-h5"
-              >Round {{ currentRound + 1 }} of 3</v-row
-            ></v-col
-          >
-          <v-col
-            ><v-row class="align-center justify-center text-h3"
-              >{{ totalPoints }} - {{ totalPointsPlayer }}</v-row
-            ></v-col
-          >
-          <v-col
-            ><v-row
-              v-if="gameTimer >= 0"
-              class="align-center justify-center text-h5"
-              >{{ gameTimer / 10 }}</v-row
-            >
-            <v-row v-else class="align-center justify-center text-h5">0</v-row>
-          </v-col>
-          <v-col>
-            <v-row v-if="duelAgainst.name" class="align-center justify-center">
-              <v-avatar color="primary" size="10vh">
-                <span class="white--text text-h5">{{
-                  duelAgainst.name
-                    .split(" ")
-                    .map((word) => word[0])
-                    .join("")
-                }}</span>
-              </v-avatar>
-            </v-row></v-col
-          >
-          <v-spacer></v-spacer>
-        </v-row>
-        <!-- warning area -->
-        <v-row class="align-center justify-center">
-          <h1 class="red--text ma-6">
-            Moving off this screen can cause bugs, proceed at your own peril
-          </h1></v-row
+  <v-container>
+    <!-- game status area -->
+    <v-layout row wrap align-center class="ma-6">
+      <v-flex fill-height md2 text-center>
+        <v-avatar color="primary" size="150px">
+          <span v-if="currentUser.username" class="white--text text-h5">
+            {{
+              currentUser.username
+                .split(" ")
+                .map((word) => word[0])
+                .join("")
+            }}
+          </span>
+        </v-avatar>
+      </v-flex>
+      <v-flex fill-height md2 text-center class="green"
+        ><h3>Round {{ currentRound + 1 }} of 3</h3></v-flex
+      >
+      <v-flex fill-height md4 text-center>
+        <div class="align-center justify-center text-h3">
+          {{ displayNumber }} - {{ displayNumber2 }}
+        </div>
+      </v-flex>
+      <v-flex fill-height md2 text-center
+        ><div v-if="gameTimer >= 0" class="align-center justify-center text-h5">
+          {{ gameTimer / 10 }}
+        </div>
+        <div v-else class="align-center justify-center text-h5">0</div>
+      </v-flex>
+      <v-flex fill-height md2 text-center
+        ><div v-if="duelAgainst.name" class="align-center justify-center">
+          <v-avatar color="primary" size="150px">
+            <span class="white--text text-h5">{{
+              duelAgainst.name
+                .split(" ")
+                .map((word) => word[0])
+                .join("")
+            }}</span>
+          </v-avatar>
+        </div>
+      </v-flex>
+    </v-layout>
+    <!-- warning area -->
+    <v-layout class="ma-6" row wrap>
+      <v-flex text-center>
+        <h3 class="red--text ma-6">
+          Moving off this screen before game ends may cause bugs!
+        </h3>
+      </v-flex>
+    </v-layout>
+    <!-- info area -->
+    <v-layout class="ma-6" row wrap>
+      <v-flex text-center>
+        <h4
+          v-if="answerGiven && this.roundYourAnswer === this.roundCorrectAnswer"
         >
-        <!-- info area -->
-        <v-row class="align-center justify-center ma-6">
-          <h4
-            v-if="
-              answerGiven && this.roundYourAnswer === this.roundCorrectAnswer
-            "
-          >
-            Well done, you've earned {{ roundPoints }} points!
-          </h4>
-          <h4
-            v-else-if="
-              answerGiven && this.roundYourAnswer !== this.roundCorrectAnswer
-            "
-          >
-            Sorry, that wasn't very correct...
-          </h4>
-          <h4 v-else-if="gameTimer <= 0">Time's up!</h4>
-          <h4 v-else>Important game info shown here</h4>
-        </v-row>
-        <!-- answers area -->
-      </v-col>
-    </v-row>
-    <v-row class="align-center justify-center" style="height: 200px">
-      <v-col>
-        <v-row class="align-center justify-center">
-          <transition name="slide" mode="out-in">
-            <router-view @eventname="answer" />
-          </transition>
-        </v-row>
-      </v-col>
-    </v-row>
+          Well done, you've earned {{ roundPoints }} points!
+        </h4>
+        <h4
+          v-else-if="
+            answerGiven && this.roundYourAnswer !== this.roundCorrectAnswer
+          "
+        >
+          Sorry, that wasn't very correct...
+        </h4>
+        <h4 v-else-if="gameTimer <= 0">Time's up!</h4>
+        <h4 v-else>Important game info shown here</h4>
+      </v-flex>
+    </v-layout>
+    <!-- answers area -->
+    <v-layout class="ma-6">
+      <v-flex>
+        <transition name="slide" mode="out-in">
+          <router-view @eventname="answer" />
+        </transition>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
 import store from "@/store";
-import { Auth, Users, Songs } from "@/services";
+import { Auth, Users } from "@/services";
 
 export default {
   name: "GameView",
@@ -113,6 +101,8 @@ export default {
     totalPointsPlayer: 0,
     currentUser: {},
     userId: Auth.state.user.userId,
+    displayNumber: 0,
+    displayNumber2: 0,
   }),
   methods: {
     goBack() {
@@ -123,6 +113,15 @@ export default {
       this.answerGiven = !this.answerGiven;
       this.roundPoints =
         this.roundYourAnswer === this.roundCorrectAnswer ? this.gameTimer : 0;
+      this.totalPoints = this.totalPoints + this.roundPoints;
+      this.totalPointsPlayer = Object.keys(this.duelAgainst.rounds)
+        .filter((duel) => duel <= this.currentRound)
+        .map((key) => this.duelAgainst.rounds[key].playerPointsEarned)
+        .reduce(
+          (prev, curr) => prev + curr,
+
+          0
+        );
       this.duelAgainst.rounds[this.currentRound].timeAnswered = this.gameTimer;
       this.gameTimer = 0;
       this.duelAgainst.rounds[this.currentRound].pointsEarned =
@@ -137,15 +136,9 @@ export default {
         this.duelAgainst.rounds[this.currentRound].playerAnswer;
       this.roundPlayerAnswerTime =
         this.duelAgainst.rounds[this.currentRound].playerTimeAnswered;
-      const songAudioId =
-        this.duelAgainst.rounds[this.currentRound].correctAnswerId;
     },
     nextRound() {
-      this.totalPointsPlayer =
-        this.totalPointsPlayer +
-        this.duelAgainst.rounds[this.currentRound].playerPointsEarned;
       this.currentRound = this.currentRound + 1;
-      this.totalPoints = this.totalPoints + this.roundPoints;
       if (!this.duelAgainst.rounds[this.currentRound]) {
         store.duelAgainst.yourScore = this.totalPoints;
         this.$router.replace("/score");
@@ -193,6 +186,34 @@ export default {
     },
     roundIsOver(roundIsNotOver, roundIsOver) {
       roundIsOver && setTimeout(() => this.nextRound(), 2000);
+    },
+    // TODO: fix doesn't activate if player doesn't answer
+    totalPoints() {
+      const interval1 = false;
+      const interval2 = false;
+      if (this.roundPoints !== 0) {
+        clearInterval(interval1);
+        clearInterval(interval2);
+
+        this.interval = window.setInterval(() => {
+          if (this.displayNumber != this.totalPoints) {
+            var change = (this.totalPoints - this.displayNumber) / 10;
+            change = change >= 0 ? Math.ceil(change) : Math.floor(change);
+            this.displayNumber = this.displayNumber + change;
+          }
+        }, 20);
+
+        this.interval2 = window.setInterval(() => {
+          if (this.displayNumber2 != this.totalPointsPlayer) {
+            const dn2 = this.displayNumber2;
+            const tpp = this.totalPointsPlayer;
+            debugger;
+            var change = (this.totalPointsPlayer - this.displayNumber2) / 10;
+            change = change >= 0 ? Math.ceil(change) : Math.floor(change);
+            this.displayNumber2 = this.displayNumber2 + change;
+          }
+        }, 20);
+      }
     },
   },
 };
