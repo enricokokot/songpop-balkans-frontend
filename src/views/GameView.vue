@@ -203,7 +203,6 @@ export default {
           if (this.displayNumber2 != this.totalPointsPlayer) {
             const dn2 = this.displayNumber2;
             const tpp = this.totalPointsPlayer;
-            debugger;
             var change = (this.totalPointsPlayer - this.displayNumber2) / 10;
             change = change >= 0 ? Math.ceil(change) : Math.floor(change);
             this.displayNumber2 = this.displayNumber2 + change;
