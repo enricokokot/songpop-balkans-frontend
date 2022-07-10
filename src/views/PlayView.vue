@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height justify-center>
+  <v-container justify-center>
     <v-snackbar v-model="snackbar" :multi-line="true">
       Sorry, you've been redirected because of an unforseeable error...
       <template v-slot:action="{ attrs }">
@@ -8,85 +8,87 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <v-col></v-col>
-    <v-responsive width="80%">
-      <v-col>
+    <v-layout row wrap>
+      <v-flex class="pa-3" md12 sm12>
         <h1 class="text-center">Who do you want to play against?</h1>
-        <v-container v-for="player in players" :key="player.id">
-          <v-card elevation="2" outlined>
-            <v-row class="ma-1">
-              <v-col>
-                <v-avatar color="primary" size="10vh">
-                  <span class="white--text text-h5">{{
-                    player.name
-                      .split(" ")
-                      .map((word) => word[0])
-                      .join("")
-                  }}</span>
-                </v-avatar>
-              </v-col>
-              <v-col
-                ><v-container fill-height>
-                  <v-row>{{ player.name }}</v-row>
-                  <v-row v-if="player.duelStartTime">
-                    {{ player.duelStartTime }}</v-row
-                  >
-                </v-container>
-              </v-col>
-              <v-col
-                ><v-container
-                  fill-height
-                  v-if="!(player.result[0] === 0 && player.result[1] === 0)"
-                >
-                  <div class="text-h3">
-                    {{ player.result[0] }} - {{ player.result[1] }}
-                  </div>
-                </v-container></v-col
+      </v-flex>
+      <v-flex v-for="player in players" :key="player.id" class="pa-3">
+        <v-card width="350" height="250" outlined rounded>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <v-list-item-title class="text-h5 mb-1">
+                {{ player.name }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="player.duelStartTime">{{
+                player.duelStartTime
+              }}</v-list-item-subtitle>
+              <v-list-item-subtitle v-else class="transparent--text"
+                >never hours ago</v-list-item-subtitle
               >
-              <v-col
-                ><v-container fill-height>
-                  <v-btn
-                    v-if="player.status === 'waiting'"
-                    x-large
-                    color="primary"
-                    @click="playADuel(player)"
-                    disabled
-                    block
-                    text
-                    >Their Turn</v-btn
-                  >
-                  <v-btn
-                    v-else
-                    x-large
-                    color="primary"
-                    @click="playADuel(player)"
-                    block
-                    text
-                    >{{ player.status }}</v-btn
-                  >
-                  <!-- <v-btn
-                    v-if="
+            </v-list-item-content>
+
+            <v-list-item-avatar left size="80" color="primary"
+              ><span class="white--text text-h5">{{
+                player.name
+                  .split(" ")
+                  .map((word) => word[0])
+                  .join("")
+              }}</span></v-list-item-avatar
+            >
+          </v-list-item>
+
+          <v-list-item
+            class="text-h5 mb-1 text-center d-flex justify-center"
+            v-if="!(player.result[0] === 0 && player.result[1] === 0)"
+          >
+            {{ player.result[0] }} - {{ player.result[1] }}
+          </v-list-item>
+          <v-list-item
+            class="text-h5 mb-1 transparent--text d-flex justify-center"
+            v-else
+          >
+            možel' 2?
+          </v-list-item>
+
+          <v-card-actions>
+            <v-btn
+              v-if="player.status === 'waiting'"
+              x-large
+              color="primary"
+              @click="playADuel(player)"
+              disabled
+              block
+              text
+              >Their Turn</v-btn
+            >
+            <v-btn
+              v-else
+              x-large
+              color="primary"
+              @click="playADuel(player)"
+              block
+              text
+              >{{ player.status }}</v-btn
+            >
+            <!-- <v-btn
+            v-if="
                       player.status !== 'challenge' &&
                       player.status !== 'waiting'
                     "
-                    x-large
-                    color="error"
-                    @click="quitADuel(player.id)"
-                    block
-                    text
-                    >QUIT
-                  </v-btn> -->
-                </v-container>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-container>
-        <v-container fill-height justify-center>
-          <v-btn x-large color="primary" @click="goBack()" block>BACK </v-btn>
-        </v-container>
-      </v-col>
-    </v-responsive>
-    <v-col></v-col>
+              x-large
+              color="error"
+              @click="quitADuel(player.id)"
+              block
+              text
+              >QUIT
+            </v-btn> -->
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+      <v-flex md12 sm12 class="pa-2">
+        <v-btn x-large color="primary" @click="goBack()" block>BACK </v-btn>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
