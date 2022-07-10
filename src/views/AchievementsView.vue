@@ -6,7 +6,11 @@
           ><h1>This is your achievement progress so far</h1></v-row
         >
         <v-container v-for="achievement in achievements" :key="achievement.id">
-          <v-card elevation="2" outlined>
+          <v-card
+            elevation="2"
+            outlined
+            :disabled="[1, 2].includes(achievement.id)"
+          >
             <v-row class="ma-2">{{ achievement.mission }}</v-row>
             <v-spacer></v-spacer>
             <v-row class="ma-2"
