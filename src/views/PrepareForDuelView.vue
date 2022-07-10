@@ -93,7 +93,6 @@ export default {
     this.duelAgainst = store.duelAgainst;
     if (!(this.duelAgainst.playlist || this.duelAgainst.playlist === 0)) {
       this.playlists = await this.fetchAllAvailablePlaylists();
-      store.playlists = this.playlists;
     }
   },
   computed: {

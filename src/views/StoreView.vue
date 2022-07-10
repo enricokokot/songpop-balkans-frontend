@@ -80,7 +80,6 @@ export default {
     async fetchData() {
       this.coins = await this.fetchUserCoins();
       this.playlists = await this.fetchAllUserPlaylists();
-      store.playlists = this.playlists;
       this.allPlaylists = await this.fetchAllPlaylists();
     },
   },
