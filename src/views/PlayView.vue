@@ -12,7 +12,11 @@
       <v-flex class="pa-3" md12 sm12>
         <h1 class="text-center">Who do you want to play against?</h1>
       </v-flex>
-      <v-flex v-for="player in players" :key="player.id" class="pa-3">
+      <v-flex
+        v-for="player in players"
+        :key="player.id"
+        class="pa-3 d-flex justify-center"
+      >
         <v-card width="350" height="250" outlined rounded>
           <v-list-item three-line>
             <v-list-item-content>
