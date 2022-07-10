@@ -21,8 +21,10 @@
 
       <v-select
         v-model="select"
-        :items="genres"
+        :items="playlists"
         :rules="playlistRules"
+        item-text="title"
+        item-disabled="isEmpty"
         label="preferred playlist"
         required
       ></v-select>
@@ -41,7 +43,7 @@
 </template>
 
 <script>
-import { Auth, Users } from "@/services";
+import { Auth, Users, Playlists } from "@/services";
 
 export default {
   data: () => ({
@@ -56,9 +58,14 @@ export default {
     passwordRules: [(v) => !!v || "password is required"],
     select: null,
     playlistRules: [(v) => !!v || "playlist is required"],
-    genres: ["Rock", "Folk"],
+    playlists: [],
   }),
-
+  async mounted() {
+    const rawPlaylists = await Playlists.getAll();
+    this.playlists = await rawPlaylists.map((playlist) => {
+      return { title: playlist.title, isEmpty: playlist.songs.length < 12 };
+    });
+  },
   methods: {
     validate() {
       this.$refs.form.validate() && this.register("/home");
