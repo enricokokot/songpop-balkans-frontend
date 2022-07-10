@@ -54,7 +54,7 @@
                   : 'primary'
               "
               style="width: 300px"
-              @click="roundIsOver && answer(song)"
+              @click="roundIsOver && gameTimer <= 100 && answer(song)"
               >{{ song }}</v-btn
             >
           </v-badge>
@@ -80,7 +80,7 @@ export default {
     roundYourAnswer: "",
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 110,
+    gameTimer: 150,
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,

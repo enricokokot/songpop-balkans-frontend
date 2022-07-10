@@ -23,7 +23,16 @@
         </div>
       </v-flex>
       <v-flex fill-height md2 text-center
-        ><div v-if="gameTimer >= 0" class="align-center justify-center text-h5">
+        ><div
+          v-if="gameTimer > 100"
+          class="align-center justify-center text-h5"
+        >
+          {{ Math.ceil((gameTimer - 100) / 10) }}
+        </div>
+        <div
+          v-else-if="gameTimer <= 100 && gameTimer > 0"
+          class="align-center justify-center text-h5"
+        >
           {{ gameTimer / 10 }}
         </div>
         <div v-else class="align-center justify-center text-h5">0</div>
@@ -95,7 +104,7 @@ export default {
     roundYourAnswer: "",
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 110,
+    gameTimer: 150,
     roundPoints: 0,
     totalPoints: 0,
     totalPointsPlayer: 0,
@@ -143,7 +152,7 @@ export default {
         this.roundPoints = 0;
         this.answerGiven = false;
         this.gameTimePassed = false;
-        this.gameTimer = 110;
+        this.gameTimer = 150;
         this.prepareForTheNextRound();
       }
     },

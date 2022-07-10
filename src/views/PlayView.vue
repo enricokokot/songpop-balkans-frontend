@@ -1,5 +1,13 @@
 <template>
   <v-container fill-height justify-center>
+    <v-snackbar v-model="snackbar" :multi-line="true">
+      Sorry, you've been redirected because of an unforseeable error...
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-col></v-col>
     <v-responsive width="80%">
       <v-col>
@@ -93,6 +101,7 @@ export default {
     players: [],
     duelAgainst: {},
     allUserRivalries: [],
+    snackbar: false,
   }),
   methods: {
     playADuel(player) {
@@ -100,12 +109,12 @@ export default {
       this.duelAgainst = player;
       this.$router.push("/duel/start");
     },
-    quitADuel(playerId) {
-      const playerBeingQuit = store.players.find(
-        (player) => player.id === playerId
-      );
-      playerBeingQuit.status = "challenge";
-    },
+    // quitADuel(playerId) {
+    //   const playerBeingQuit = store.players.find(
+    //     (player) => player.id === playerId
+    //   );
+    //   playerBeingQuit.status = "challenge";
+    // },
     goBack() {
       this.$router.push("/home");
     },
@@ -132,6 +141,8 @@ export default {
     },
   },
   async mounted() {
+    this.snackbar = store.snackbar;
+    setTimeout(() => (store.snackbar = false), 3000);
     this.duelAgainst = store.duelAgainst;
     const currentUser = this.userId;
     this.allUserRivalries = await this.fetchAllRivalries();

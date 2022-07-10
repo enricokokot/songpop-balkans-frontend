@@ -1,12 +1,14 @@
 import axios from "axios";
 import moment from "moment";
 
+import store from "@/store";
 import $router from "@/router";
 
 const Service = axios.create({
   baseURL: "https://songpop-balkans.herokuapp.com/",
+  // baseURL: "http://localhost:3000",
   // raised because of game preparation time for Playlists.generateGame()
-  timeout: 3000,
+  timeout: 5000,
 });
 
 Service.interceptors.request.use((request) => {
@@ -24,6 +26,11 @@ Service.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.log("error", error);
+    if (["ECONNABORTED", "ERR_NETWORK"].includes(error.code)) {
+      store.snackbar = true;
+      $router.replace("/duel");
+    }
     if (error.response.status == 401) {
       Auth.logout();
       $router.go();
