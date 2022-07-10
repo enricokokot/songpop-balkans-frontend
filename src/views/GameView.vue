@@ -1,9 +1,10 @@
 <template>
   <v-container>
     <!-- game status area -->
-    <v-layout row wrap align-center class="ma-6">
-      <v-flex fill-height md2 text-center>
-        <v-avatar color="primary" size="150px">
+    <v-layout row align-center class="ma-6">
+      <!-- profile 1 element (1) -->
+      <v-flex fill-height text-center xs3 order-xs3 sm2 order-sm1>
+        <v-avatar color="primary" size="10vh">
           <span v-if="currentUser.username" class="white--text text-h5">
             {{
               currentUser.username
@@ -14,15 +15,18 @@
           </span>
         </v-avatar>
       </v-flex>
-      <v-flex fill-height md2 text-center
+      <!-- rounds element (2) -->
+      <v-flex fill-height text-center xs6 order-xs1 sm2 order-sm2
         ><h3>Round {{ currentRound + 1 }} of 3</h3></v-flex
       >
-      <v-flex fill-height md4 text-center>
+      <!-- score element (3) -->
+      <v-flex fill-height text-center xs6 order-xs4 sm4 order-sm3>
         <div class="align-center justify-center text-h3">
           {{ displayNumber }} - {{ displayNumber2 }}
         </div>
       </v-flex>
-      <v-flex fill-height md2 text-center
+      <!-- time element (4) -->
+      <v-flex fill-height text-center xs6 order-xs2 sm2 order-sm4
         ><div
           v-if="gameTimer > 100"
           class="align-center justify-center text-h5"
@@ -37,9 +41,10 @@
         </div>
         <div v-else class="align-center justify-center text-h5">0</div>
       </v-flex>
-      <v-flex fill-height md2 text-center
+      <!-- profile 2 element (5) -->
+      <v-flex fill-height text-center xs3 order-xs5 sm2 order-sm5
         ><div v-if="duelAgainst.name" class="align-center justify-center">
-          <v-avatar color="primary" size="150px">
+          <v-avatar color="primary" size="10vh">
             <span class="white--text text-h5">{{
               duelAgainst.name
                 .split(" ")
@@ -51,15 +56,15 @@
       </v-flex>
     </v-layout>
     <!-- warning area -->
-    <v-layout class="ma-6" row wrap>
+    <v-layout class="ma-3" row wrap>
       <v-flex text-center>
-        <h3 class="red--text ma-6">
+        <h3 class="red--text">
           Moving off this screen before game ends may cause bugs!
         </h3>
       </v-flex>
     </v-layout>
     <!-- info area -->
-    <v-layout class="ma-6" row wrap>
+    <v-layout class="ma-2" row wrap>
       <v-flex text-center>
         <h4
           v-if="answerGiven && this.roundYourAnswer === this.roundCorrectAnswer"
@@ -78,7 +83,7 @@
       </v-flex>
     </v-layout>
     <!-- answers area -->
-    <v-layout class="ma-6">
+    <v-layout class="ma-3">
       <v-flex>
         <transition name="slide" mode="out-in">
           <router-view @eventname="answer" />
