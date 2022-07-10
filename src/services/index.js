@@ -4,7 +4,7 @@ import moment from "moment";
 import $router from "@/router";
 
 const Service = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://songpop-balkans.herokuapp.com/",
   // raised because of game preparation time for Playlists.generateGame()
   timeout: 3000,
 });
