@@ -1,5 +1,13 @@
 <template>
   <v-container fill-height>
+    <v-snackbar v-model="snackbar" :multi-line="true">
+      Sorry, additional playlists and songs are still being made!
+      <template v-slot:action="{ attrs }">
+        <v-btn color="red" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-col>
       <v-row class="align-center justify-center">
         <v-btn
@@ -44,6 +52,7 @@ export default {
   data: () => ({
     userId: Auth.state.user.userId,
     auth: Auth.authenticated,
+    snackbar: false,
   }),
   methods: {
     async fetchAllAchievements() {
@@ -57,11 +66,11 @@ export default {
       this.$router.push("/achievements");
     },
     goToStore() {
-      this.$router.push("/store");
+      this.snackbar = !this.snackbar;
+      // this.$router.push("/store");
     },
   },
   async mounted() {
-    this.user = store.currentUser;
     store.achievements = await this.fetchAllAchievements();
   },
   computed: {
