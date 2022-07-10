@@ -1,7 +1,12 @@
 <template>
   <v-container fill-height justify-center>
-    <v-col>
-      <v-row v-for="song in roundSongs" :key="song" class="justify-center">
+    <v-layout align-center row wrap style="max-width: 625px">
+      <v-flex
+        v-for="song in roundSongs"
+        :key="song"
+        class="justify-center text-center"
+        md6
+      >
         <v-badge
           :value="answerGiven && song === roundYourAnswer"
           avatar
@@ -59,8 +64,8 @@
             >
           </v-badge>
         </v-badge>
-      </v-row>
-    </v-col>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
