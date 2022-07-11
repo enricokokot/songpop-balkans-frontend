@@ -3,7 +3,7 @@
     <v-row class="align-center justify-center">
       <v-col>
         <v-row class="align-center justify-center pa-2">
-          <h1>This is the store page</h1>
+          <h1>This is the shop page</h1>
         </v-row>
         <v-row class="align-center justify-center pa-2">
           <h3 class="text-center">
@@ -45,7 +45,7 @@ import store from "@/store";
 import { Auth, Users, Playlists } from "@/services";
 
 export default {
-  name: "StoreView",
+  name: "ShopView",
   data: () => ({
     userId: Auth.state.user.userId,
     coins: 0,
