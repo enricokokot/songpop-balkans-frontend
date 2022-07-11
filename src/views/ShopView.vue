@@ -1,42 +1,42 @@
 <template>
-  <v-container fill-height fluid>
-    <v-row class="align-center justify-center">
-      <v-col>
-        <v-row class="align-center justify-center pa-2">
-          <h1>This is the shop page</h1>
-        </v-row>
-        <v-row class="align-center justify-center pa-2">
-          <h3 class="text-center">
-            You are holding {{ coins }} coins, ready to be spent, in your
-            pocket...<br />
-            What playlist would you like to spend 'em on?'
-          </h3>
-        </v-row>
-        <v-row
-          v-for="playlist in allPlaylists"
-          :key="playlist.title"
-          class="align-center justify-center"
-        >
-          <v-btn
-            v-if="!playlists.includes(playlist.title)"
-            x-large
-            class="ma-2"
-            color="primary"
-            @click="buyPlaylist(playlist)"
-            width="30%"
-            ><v-col class="d-flex justify-start">{{ playlist.title }}</v-col>
-            <v-col class="d-flex justify-end">{{
-              playlist.price
-            }}</v-col></v-btn
-          >
-        </v-row>
-        <v-row class="align-center justify-center mt-8">
-          <v-btn x-large color="primary" @click="goBack()" width="30%"
-            >BACK
-          </v-btn>
-        </v-row>
-      </v-col>
-    </v-row>
+  <v-container fluid>
+    <v-layout row class="align-center justify-center">
+      <v-flex class="text-center pa-3" xs12>
+        <h1>This is the shop page</h1>
+      </v-flex>
+      <v-flex class="text-center pa-3" xs12>
+        <h3>{{ coins }} coins available, choose a playlist</h3>
+      </v-flex>
+      <v-flex class="text-center pa-3" xs12>
+        <transition-group name="slide-fade" mode="out-in">
+          <div v-for="playlist in allPlaylists" :key="playlist.title">
+            <transition name="slide-fade" mode="out-in">
+              <v-btn
+                v-if="!playlists.includes(playlist.title)"
+                x-large
+                :key="playlist.title"
+                class="ma-2"
+                color="primary"
+                @click="buyPlaylist(playlist)"
+                width="300"
+                :disabled="playlist.songs.length < 12"
+                ><v-col class="d-flex justify-start">{{
+                  playlist.title
+                }}</v-col>
+                <v-col class="d-flex justify-end">{{
+                  playlist.price
+                }}</v-col></v-btn
+              >
+            </transition>
+          </div>
+        </transition-group>
+      </v-flex>
+      <v-flex class="text-center pa-3" xs12>
+        <v-btn x-large color="primary" @click="goBack()" width="300"
+          >BACK
+        </v-btn>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -91,3 +91,17 @@ export default {
   },
 };
 </script>
+
+<style>
+.slide-fade-enter-active {
+  transition: all 1s ease;
+}
+.slide-fade-leave-active {
+  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active for <2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+</style>
