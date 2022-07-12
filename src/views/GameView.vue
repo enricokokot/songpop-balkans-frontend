@@ -5,9 +5,9 @@
       <!-- profile 1 element (1) -->
       <v-flex fill-height text-center xs3 order-xs3 sm2 order-sm1>
         <v-avatar color="primary" size="10vh">
-          <span v-if="currentUser.username" class="white--text text-h5">
+          <span v-if="user.name" class="white--text text-h5">
             {{
-              currentUser.username
+              user.name
                 .split(" ")
                 .map((word) => word[0])
                 .join("")
@@ -22,7 +22,7 @@
       <!-- score element (3) -->
       <v-flex fill-height text-center xs6 order-xs4 sm4 order-sm3>
         <div class="align-center justify-center text-h3">
-          {{ displayNumber }} - {{ displayNumber2 }}
+          {{ dynamicPlayerTotal }} - {{ dynamicRivalTotal }}
         </div>
       </v-flex>
       <!-- time element (4) -->
@@ -43,10 +43,10 @@
       </v-flex>
       <!-- profile 2 element (5) -->
       <v-flex fill-height text-center xs3 order-xs5 sm2 order-sm5
-        ><div v-if="duelAgainst.name" class="align-center justify-center">
+        ><div v-if="rival.name" class="align-center justify-center">
           <v-avatar color="primary" size="10vh">
             <span class="white--text text-h5">{{
-              duelAgainst.name
+              rival.name
                 .split(" ")
                 .map((word) => word[0])
                 .join("")
@@ -67,13 +67,17 @@
     <v-layout class="ma-2" row wrap>
       <v-flex text-center>
         <h4
-          v-if="answerGiven && this.roundYourAnswer === this.roundCorrectAnswer"
+          v-if="
+            answerGiven &&
+            user.givenAnswers[currentRound] === roundDetails.correctAnswer
+          "
         >
-          Well done, you've earned {{ roundPoints }} points!
+          Well done, you've earned {{ user.pointsEarned[currentRound] }} points!
         </h4>
         <h4
           v-else-if="
-            answerGiven && this.roundYourAnswer !== this.roundCorrectAnswer
+            answerGiven &&
+            user.givenAnswers[currentRound] !== roundDetails.correctAnswer
           "
         >
           Sorry, that wasn't very correct...
@@ -85,9 +89,17 @@
     <!-- answers area -->
     <v-layout class="ma-3">
       <v-flex>
-        <transition name="slide" mode="out-in">
-          <router-view @eventname="answer" />
-        </transition>
+        <RoundAnswers
+          :duel="duel"
+          :user="user"
+          :rival="rival"
+          :gameTimer="gameTimer"
+          :currentRound="currentRound"
+          :roundDetails="roundDetails"
+          :roundIsOver="roundIsOver"
+          :answerGiven="answerGiven"
+          @eventname="answer"
+        />
       </v-flex>
     </v-layout>
   </v-container>
@@ -95,66 +107,110 @@
 
 <script>
 import store from "@/store";
-import { Auth, Users } from "@/services";
+import { Auth, Users, Songs } from "@/services";
+import RoundAnswers from "@/components/RoundAnswers";
 
 export default {
   name: "GameView",
+  components: { RoundAnswers },
   data: () => ({
-    duelAgainst: {},
+    user: { pointsEarned: [0, 0, 0] },
+    rival: { pointsEarned: [0, 0, 0] },
+    duel: {},
     currentRound: 0,
-    roundSongs: [],
-    roundCorrectAnswer: "",
-    roundPlayerAnswer: "",
-    roundPlayerAnswerTime: 0,
-    roundYourAnswer: "",
+    roundDetails: {},
     answerGiven: false,
     gameTimePassed: false,
     gameTimer: 150,
-    roundPoints: 0,
-    totalPoints: 0,
-    totalPointsPlayer: 0,
-    currentUser: {},
     userId: Auth.state.user.userId,
-    displayNumber: 0,
-    displayNumber2: 0,
+    dynamicPlayerTotal: 0,
+    dynamicRivalTotal: 0,
+    ctx: {},
+    currGain: {},
+    gainNode: {},
   }),
   methods: {
-    goBack() {
-      this.$router.back();
+    async fetchASongAudio(songId) {
+      const songAudio = await Songs.getAudio(songId);
+      return songAudio;
     },
     answer(songId) {
-      this.roundYourAnswer = songId;
+      const currentRound = this.currentRound;
+      this.user.givenAnswers[currentRound] = songId;
+      const playerAnswer = this.user.givenAnswers[currentRound];
+      const correctAnswer = this.roundDetails.correctAnswer;
+
+      this.user.givenAnswers[currentRound] = songId;
+      this.user.answerTimes[currentRound] = this.gameTimer;
+      this.user.pointsEarned[currentRound] =
+        playerAnswer === correctAnswer ? this.gameTimer : 0;
       this.answerGiven = !this.answerGiven;
-      this.roundPoints =
-        this.roundYourAnswer === this.roundCorrectAnswer ? this.gameTimer : 0;
-      this.totalPoints = this.totalPoints + this.roundPoints;
-      this.totalPointsPlayer = Object.keys(this.duelAgainst.rounds)
-        .filter((duel) => duel <= this.currentRound)
-        .map((key) => this.duelAgainst.rounds[key].playerPointsEarned)
-        .reduce((prev, curr) => prev + curr, 0);
-      this.duelAgainst.rounds[this.currentRound].timeAnswered = this.gameTimer;
       this.gameTimer = 0;
-      this.duelAgainst.rounds[this.currentRound].pointsEarned =
-        this.roundPoints;
-      this.duelAgainst.rounds[this.currentRound].answer = this.roundYourAnswer;
     },
     async prepareForTheNextRound() {
-      this.roundSongs = this.duelAgainst.rounds[this.currentRound].songs;
-      this.roundCorrectAnswer =
-        this.duelAgainst.rounds[this.currentRound].correctAnswer;
-      this.roundPlayerAnswer =
-        this.duelAgainst.rounds[this.currentRound].playerAnswer;
-      this.roundPlayerAnswerTime =
-        this.duelAgainst.rounds[this.currentRound].playerTimeAnswered;
+      const currentRound = this.currentRound;
+      const duel = this.duel;
+      const rival = this.rival;
+
+      const roundAnswers = duel.offeredAnswers[currentRound];
+      const roundCorrectAnswer = duel.correctAnswers[currentRound];
+      const roundRivalAnswer = rival.givenAnswers[currentRound];
+      const roundRivalAnswerTime = rival.answerTimes[currentRound];
+
+      this.roundDetails = {
+        answers: roundAnswers,
+        correctAnswer: roundCorrectAnswer,
+        rivalAnswer: roundRivalAnswer,
+        rivalAnswerTime: roundRivalAnswerTime,
+        isOver: false,
+      };
+
+      const songAudioId = duel.correctAnswersIds[currentRound];
+      const songAudio = await this.fetchASongAudio(songAudioId);
+      //   const songAudio = store.songAudios[this.currentRound];
+
+      const ctx = new AudioContext();
+      let decodedAudio = {};
+      try {
+        decodedAudio = await ctx.decodeAudioData(songAudio);
+      } catch (e) {
+        store.snackbar = true;
+        this.$router.replace("/duel");
+      }
+      const source = ctx.createBufferSource();
+      source.buffer = decodedAudio;
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = 0.5;
+      let currGain = gainNode.gain.value;
+      source.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      this.playSong(source, ctx);
+
+      this.gainNode = gainNode;
+      this.currGain = currGain;
+      this.ctx = ctx;
+    },
+    playSong(source) {
+      source.start();
+    },
+    stopSong() {
+      this.currGain = 0;
+      this.gainNode.gain.exponentialRampToValueAtTime(
+        0.01,
+        this.ctx.currentTime + 5
+      );
     },
     nextRound() {
-      this.currentRound = this.currentRound + 1;
-      if (!this.duelAgainst.rounds[this.currentRound]) {
-        store.duelAgainst.yourScore = this.totalPoints;
+      this.currentRound += 1;
+      if (this.currentRound >= this.duel.offeredAnswers.length) {
+        store.duelResults = {
+          user: this.user,
+          rival: this.rival,
+          duel: this.duel,
+          roundDetails: this.roundDetails,
+        };
         this.$router.replace("/score");
       } else {
-        this.roundYourAnswer = "";
-        this.roundPoints = 0;
         this.answerGiven = false;
         this.gameTimePassed = false;
         this.gameTimer = 150;
@@ -167,17 +223,76 @@ export default {
     },
   },
   async mounted() {
-    this.$router.replace({
-      name: "round1",
-      params: {},
-    });
-    this.currentUser = await this.fetchCurrentUser();
-    this.duelAgainst = store.duelAgainst;
+    const userDetails = await this.fetchCurrentUser();
+    const duelDetails = store.duelAgainst;
+
+    const roundKeys = Object.keys(duelDetails.rounds);
+    const givenAnswers = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].playerAnswer
+    );
+    const answerTimes = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].playerTimeAnswered
+    );
+    const pointsEarned = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].playerPointsEarned
+    );
+    const correctAnswers = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].correctAnswer
+    );
+    const correctAnswersIds = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].correctAnswerId
+    );
+    const offeredAnswers = roundKeys.map(
+      (roundKey) => duelDetails.rounds[roundKey].songs
+    );
+
+    this.user = {
+      id: userDetails.id,
+      name: userDetails.username,
+      givenAnswers: ["", "", ""],
+      answerTimes: [0, 0, 0],
+      pointsEarned: [0, 0, 0],
+    };
+    this.rival = {
+      id: duelDetails.id,
+      name: duelDetails.name,
+      givenAnswers,
+      answerTimes,
+      pointsEarned,
+    };
+    this.duel = {
+      id: duelDetails.duelId,
+      startTime: duelDetails.duelStartTime,
+      playlist: duelDetails.playlist,
+      resultSoFar: duelDetails.results,
+      offeredAnswers,
+      correctAnswers,
+      correctAnswersIds,
+    };
+
     this.prepareForTheNextRound();
   },
   computed: {
     roundIsOver() {
-      return this.gameTimer > 0 && !this.answerGiven;
+      return this.gameTimer <= 0 || this.answerGiven;
+    },
+    playerTotal() {
+      const resultBeforeAnswer = this.user.pointsEarned
+        .slice(0, this.currentRound)
+        .reduce((prev, curr) => prev + curr, 0);
+      const resultAfterAnswer = this.user.pointsEarned
+        .slice(0, this.currentRound + 1)
+        .reduce((prev, curr) => prev + curr, 0);
+      return this.roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
+    },
+    rivalTotal() {
+      const resultBeforeAnswer = this.rival.pointsEarned
+        .slice(0, this.currentRound)
+        .reduce((prev, curr) => prev + curr, 0);
+      const resultAfterAnswer = this.rival.pointsEarned
+        .slice(0, this.currentRound + 1)
+        .reduce((prev, curr) => prev + curr, 0);
+      return this.roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
     },
   },
   watch: {
@@ -190,53 +305,46 @@ export default {
         }
         if (value === 0) {
           this.gameTimePassed = !this.gameTimePassed;
+          this.stopSong();
         }
       },
       immediate: true,
     },
-    roundIsOver(roundIsNotOver, roundIsOver) {
-      roundIsOver && setTimeout(() => this.nextRound(), 2000);
+    roundIsOver() {
+      this.roundIsOver && setTimeout(() => this.nextRound(), 2000);
     },
-    // TODO: fix doesn't activate if player doesn't answer
-    totalPoints() {
-      const interval1 = false;
-      const interval2 = false;
-      if (this.roundPoints !== 0) {
-        clearInterval(interval1);
-        clearInterval(interval2);
+    playerTotal() {
+      let interval = false;
+      // clearInterval(interval);
 
-        this.interval = window.setInterval(() => {
-          if (this.displayNumber != this.totalPoints) {
-            var change = (this.totalPoints - this.displayNumber) / 10;
-            change = change >= 0 ? Math.ceil(change) : Math.floor(change);
-            this.displayNumber = this.displayNumber + change;
-          }
-        }, 20);
-
-        this.interval2 = window.setInterval(() => {
-          if (this.displayNumber2 != this.totalPointsPlayer) {
-            const dn2 = this.displayNumber2;
-            const tpp = this.totalPointsPlayer;
-            var change = (this.totalPointsPlayer - this.displayNumber2) / 10;
-            change = change >= 0 ? Math.ceil(change) : Math.floor(change);
-            this.displayNumber2 = this.displayNumber2 + change;
-          }
-        }, 20);
+      if (this.playerTotal == this.dynamicPlayerTotal) {
+        return;
       }
+
+      interval = window.setInterval(() => {
+        if (this.dynamicPlayerTotal != this.playerTotal) {
+          let change = (this.playerTotal - this.dynamicPlayerTotal) / 10;
+          change = change >= 0 ? Math.ceil(change) : Math.floor(change);
+          this.dynamicPlayerTotal = this.dynamicPlayerTotal + change;
+        }
+      }, 20);
+    },
+    rivalTotal() {
+      let interval = false;
+      // clearInterval(interval);
+
+      if (this.rivalTotal == this.dynamicRivalTotal) {
+        return;
+      }
+
+      interval = window.setInterval(() => {
+        if (this.dynamicRivalTotal != this.rivalTotal) {
+          let change = (this.rivalTotal - this.dynamicRivalTotal) / 10;
+          change = change >= 0 ? Math.ceil(change) : Math.floor(change);
+          this.dynamicRivalTotal = this.dynamicRivalTotal + change;
+        }
+      }, 20);
     },
   },
 };
 </script>
-
-<style>
-/* slide */
-.slide-enter-active,
-.slide-leave-active {
-  transition: opacity 0.5s, transform 0.5s;
-}
-.slide-enter,
-.slide-leave-to {
-  opacity: 0;
-  transform: translateX(-30%);
-}
-</style>
