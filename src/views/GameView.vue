@@ -55,6 +55,18 @@
         </div>
       </v-flex>
     </v-layout>
+    <!-- visual game timer area -->
+    <v-layout justify-center>
+      <v-flex style="max-width: 85%" class="py-5">
+        <v-progress-linear
+          :value="
+            gameTimer < 100
+              ? gameTimer
+              : mirror(Math.ceil((gameTimer - 100) * 3.33))
+          "
+        ></v-progress-linear>
+      </v-flex>
+    </v-layout>
     <!-- warning area -->
     <v-layout class="ma-3" row wrap>
       <v-flex text-center>
@@ -131,6 +143,13 @@ export default {
     songIsPlaying: false,
   }),
   methods: {
+    mirror(number) {
+      const maxNumber = 100;
+      const middleNumber = maxNumber / 2;
+      return number <= middleNumber
+        ? middleNumber - number + middleNumber
+        : middleNumber - (number - middleNumber);
+    },
     async fetchASongAudio(songId) {
       const songAudio = await Songs.getAudio(songId);
       return songAudio;
@@ -193,7 +212,7 @@ export default {
       this.ctx = ctx;
     },
     playSong(source) {
-      setTimeout(() => source.start(), 2000);
+      setTimeout(() => source.start(), 2500);
     },
     stopSong() {
       this.currGain = 0;
