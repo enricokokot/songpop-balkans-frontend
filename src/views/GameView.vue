@@ -121,13 +121,14 @@ export default {
     roundDetails: {},
     answerGiven: false,
     gameTimePassed: false,
-    gameTimer: 150,
+    gameTimer: 130,
     userId: Auth.state.user.userId,
     dynamicPlayerTotal: 0,
     dynamicRivalTotal: 0,
     ctx: {},
     currGain: {},
     gainNode: {},
+    songIsPlaying: false,
   }),
   methods: {
     async fetchASongAudio(songId) {
@@ -177,6 +178,7 @@ export default {
         store.snackbar = true;
         this.$router.replace("/duel");
       }
+      this.gameTimer -= 1;
       const source = ctx.createBufferSource();
       source.buffer = decodedAudio;
       const gainNode = ctx.createGain();
@@ -191,7 +193,7 @@ export default {
       this.ctx = ctx;
     },
     playSong(source) {
-      source.start();
+      setTimeout(() => source.start(), 2000);
     },
     stopSong() {
       this.currGain = 0;
@@ -213,7 +215,7 @@ export default {
       } else {
         this.answerGiven = false;
         this.gameTimePassed = false;
-        this.gameTimer = 150;
+        this.gameTimer = 130;
         this.prepareForTheNextRound();
       }
     },
@@ -298,7 +300,7 @@ export default {
   watch: {
     gameTimer: {
       handler(value) {
-        if (value > 0) {
+        if (value < 130 && value > 0) {
           setTimeout(() => {
             this.gameTimer--;
           }, 100);
