@@ -155,7 +155,7 @@ export default {
     };
     const endDuelData = {
       duelId: duel.id,
-      challengeeScore: rivalScore,
+      challengeeScore: userScore,
     };
     /* TODO: could cause significant bugs, fix ASAP */
     const enemyHasPlayed = rival.givenAnswers.reduce(
