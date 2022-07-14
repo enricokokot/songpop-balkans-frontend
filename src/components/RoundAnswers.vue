@@ -62,7 +62,15 @@
                     ? 'success'
                     : 'primary'
                 "
-                style="width: 300px"
+                :style="
+                  answer.length < 23
+                    ? 'width: 300px'
+                    : answer.length < 30
+                    ? 'width: 300px; font-size: 0.8em'
+                    : answer.length < 35
+                    ? 'width: 300px; font-size: 0.7em'
+                    : 'width: 300px; font-size: 0.6em'
+                "
                 @click="!roundIsOver && gameTimer <= 100 && giveAnswer(answer)"
                 transition="slide-x-transition"
                 >{{ answer }}</v-btn
@@ -124,5 +132,9 @@ export default {
 }
 .slide-leave-active {
   position: absolute;
+}
+
+.v-btn {
+  font-size: 1.2em;
 }
 </style>
