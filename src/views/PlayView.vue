@@ -12,6 +12,21 @@
       <v-flex class="pa-3" xs12>
         <h1 class="text-center">Who do you want to play against?</h1>
       </v-flex>
+      <v-flex xs12>
+        <v-layout justify-center xs12>
+          <v-flex xs12 style="max-width: 450px">
+            <v-text-field
+              single-line
+              v-model="input"
+              @input="filter"
+              class="px-6 centered-input"
+              ><template v-slot:label>
+                <v-icon> mdi-magnify </v-icon>
+              </template></v-text-field
+            >
+          </v-flex>
+        </v-layout>
+      </v-flex>
       <!-- <v-fade-transition group leave-absolute> -->
       <v-flex
         v-for="player in players"
@@ -53,10 +68,16 @@ export default {
     snackbar: false,
     page: 1,
     pageNumber: 1,
+    input: "",
   }),
   methods: {
+    async filter() {
+      const { results, pageNumber } = await this.fetchOrdered();
+      this.pageNumber = pageNumber;
+      this.players = await this.preparePlayers(results);
+    },
     async changePage(page) {
-      const { results, pageNumber } = await this.fetchOrdered(page);
+      const { results, pageNumber } = await this.fetchOrdered();
       this.pageNumber = pageNumber;
       this.players = await this.preparePlayers(results);
       window.scrollTo(0, 0);
@@ -78,8 +99,12 @@ export default {
       const player = await Users.getOne(this.userId);
       return player;
     },
-    async fetchOrdered(page) {
-      const users = await Users.getOrdered(this.userId, page - 1);
+    async fetchOrdered() {
+      const users = await Users.getOrdered(
+        this.userId,
+        this.page - 1,
+        this.input
+      );
       return users;
     },
     async preparePlayers(players) {
@@ -175,5 +200,9 @@ export default {
 <style>
 html {
   scroll-behavior: smooth;
+}
+
+.centered-input input {
+  text-align: center;
 }
 </style>

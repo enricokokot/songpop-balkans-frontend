@@ -54,8 +54,10 @@ const Users = {
     const data = response.data;
     return data;
   },
-  async getOrdered(id, page) {
-    const response = await Service.get(`/user/${id}/ordered?page=${page}`);
+  async getOrdered(id, page, username) {
+    const response = await Service.get(
+      `/user/${id}/ordered?page=${page}&username=${username}`
+    );
     const data = response.data;
     return data;
   },
