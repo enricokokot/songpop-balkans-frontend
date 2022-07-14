@@ -5,7 +5,7 @@
         <v-row class="align-center justify-center pa-2">
           <h1 v-if="duelAgainst.name" class="text-center">
             {{ duelAgainst.name.split(" ")[0] }} has challenged you in
-            {{ duelAgainst.playlist.title }}
+            {{ duelAgainst.duel.playlist.title }}
           </h1>
         </v-row>
         <v-row class="align-center justify-center"
@@ -80,8 +80,8 @@ export default {
     },
     async generateAGame(playlistId) {
       const game = await Playlists.generateGame(playlistId);
-      this.duelAgainst.rounds = game.roundsData;
-      this.duelAgainst.playlist = game.playlistId;
+      this.duelAgainst.duel.rounds = game.roundsData;
+      this.duelAgainst.duel.playlist = game.playlistId;
       store.duelAgainst = this.duelAgainst;
       this.$router.replace("/game");
     },
@@ -91,7 +91,7 @@ export default {
   },
   async mounted() {
     this.duelAgainst = store.duelAgainst;
-    if (!(this.duelAgainst.playlist || this.duelAgainst.playlist === 0)) {
+    if (!Object.keys(this.duelAgainst.duel).length) {
       this.playlists = await this.fetchAllAvailablePlaylists();
     }
   },

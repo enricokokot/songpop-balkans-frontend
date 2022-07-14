@@ -247,24 +247,24 @@ export default {
     const userDetails = await this.fetchCurrentUser();
     const duelDetails = store.duelAgainst;
 
-    const roundKeys = Object.keys(duelDetails.rounds);
+    const roundKeys = Object.keys(duelDetails.duel.rounds);
     const givenAnswers = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].playerAnswer
+      (roundKey) => duelDetails.duel.rounds[roundKey].playerAnswer
     );
     const answerTimes = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].playerTimeAnswered
+      (roundKey) => duelDetails.duel.rounds[roundKey].playerTimeAnswered
     );
     const pointsEarned = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].playerPointsEarned
+      (roundKey) => duelDetails.duel.rounds[roundKey].playerPointsEarned
     );
     const correctAnswers = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].correctAnswer
+      (roundKey) => duelDetails.duel.rounds[roundKey].correctAnswer
     );
     const correctAnswersIds = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].correctAnswerId
+      (roundKey) => duelDetails.duel.rounds[roundKey].correctAnswerId
     );
     const offeredAnswers = roundKeys.map(
-      (roundKey) => duelDetails.rounds[roundKey].songs
+      (roundKey) => duelDetails.duel.rounds[roundKey].songs
     );
 
     this.user = {
@@ -282,10 +282,10 @@ export default {
       pointsEarned,
     };
     this.duel = {
-      id: duelDetails.duelId,
-      startTime: duelDetails.duelStartTime,
-      playlist: duelDetails.playlist,
-      resultSoFar: duelDetails.results,
+      id: duelDetails.duel._id,
+      startTime: duelDetails.duel.time,
+      playlist: duelDetails.duel.playlist,
+      resultSoFar: duelDetails.score,
       offeredAnswers,
       correctAnswers,
       correctAnswersIds,

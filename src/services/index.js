@@ -1,5 +1,4 @@
 import axios from "axios";
-import moment from "moment";
 
 import store from "@/store";
 import $router from "@/router";
@@ -55,6 +54,11 @@ const Users = {
     const data = response.data;
     return data;
   },
+  async getOrdered(id, page) {
+    const response = await Service.get(`/user/${id}/ordered?page=${page}`);
+    const data = response.data;
+    return data;
+  },
   async getCoins(userId) {
     const response = await Service.get(`/user/${userId}/coin`);
     const data = response.data;
@@ -81,112 +85,6 @@ const Users = {
     );
     const data = response.data;
     return data;
-  },
-  transformAll(allPlayers, allDuels, currentUser, allUserRivalries) {
-    const {
-      specificPlayerDuelsWhereHeIsTheChallenger,
-      specificPlayerDuelsWhereHeIsBeingChallenged,
-    } = allDuels;
-    const ids1 = specificPlayerDuelsWhereHeIsTheChallenger.map(
-      (duel) => duel.challengeTakerId
-    );
-    const ids2 = specificPlayerDuelsWhereHeIsBeingChallenged.map(
-      (duel) => duel.challengerId
-    );
-    const ids3 = ids1.concat(ids2);
-    const allPlayersFiltered = allPlayers.filter(
-      (player) => !ids3.includes(player._id)
-    );
-
-    const everyPlayerOnThePage = specificPlayerDuelsWhereHeIsBeingChallenged
-      .concat(specificPlayerDuelsWhereHeIsTheChallenger)
-      .concat(allPlayersFiltered);
-    const everyPlayerOnThePageModified = everyPlayerOnThePage
-      .filter((player) => player._id !== currentUser)
-      .map((player) => {
-        if (player.rounds && player.challengeTakerId === currentUser) {
-          const duelStartTime = player.time
-            ? moment(player.time).fromNow()
-            : "...";
-          const idsSortedByOrder =
-            currentUser > player.challengerId
-              ? [player.challengerId, currentUser]
-              : [currentUser, player.challengerId];
-          const wantedRivalry = allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
-          );
-          const result = wantedRivalry
-            ? currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player.challengerId,
-            name: allPlayers.find((user) => user._id === player.challengerId)
-              .username,
-            result: [player.playerTwoTotalScore, player.playerOneTotalScore],
-            status: "reply",
-            playlist: player.playlist,
-            rounds: player.rounds,
-            duelId: player._id,
-            result,
-            duelStartTime,
-          };
-        } else if (player.rounds && player.challengeTakerId !== currentUser) {
-          const duelStartTime = player.time
-            ? moment(player.time).fromNow()
-            : "...";
-          const idsSortedByOrder =
-            currentUser > player.challengeTakerId
-              ? [player.challengeTakerId, currentUser]
-              : [currentUser, player.challengeTakerId];
-          const wantedRivalry = allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerTwoId === idsSortedByOrder[1] &&
-              rivalry.playerOneId === idsSortedByOrder[0]
-          );
-          const result = wantedRivalry
-            ? currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player.challengeTakerId,
-            name: allPlayers.find(
-              (user) => user._id === player.challengeTakerId
-            ).username,
-            result: [player.playerOneTotalScore, player.playerTwoTotalScore],
-            status: "waiting",
-            result,
-            duelStartTime,
-          };
-        } else {
-          const idsSortedByOrder =
-            currentUser > player._id
-              ? [player._id, currentUser]
-              : [currentUser, player._id];
-          const wantedRivalry = allUserRivalries.find(
-            (rivalry) =>
-              rivalry.playerOneId === idsSortedByOrder[0] &&
-              rivalry.playerTwoId === idsSortedByOrder[1]
-          );
-          const result = wantedRivalry
-            ? currentUser === wantedRivalry.playerOneId
-              ? [wantedRivalry.playerOneScore, wantedRivalry.playerTwoScore]
-              : [wantedRivalry.playerTwoScore, wantedRivalry.playerOneScore]
-            : [0, 0];
-          return {
-            id: player._id,
-            name: player.username,
-            result: [0, 0],
-            status: "challenge",
-            result,
-          };
-        }
-      });
-    return everyPlayerOnThePageModified;
   },
 };
 

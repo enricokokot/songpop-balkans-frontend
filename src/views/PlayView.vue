@@ -9,7 +9,7 @@
       </template>
     </v-snackbar>
     <v-layout row wrap>
-      <v-flex class="pa-3" md12 sm12>
+      <v-flex class="pa-3" xs12>
         <h1 class="text-center">Who do you want to play against?</h1>
       </v-flex>
       <v-flex
@@ -17,80 +17,19 @@
         :key="player.id"
         class="pa-3 d-flex justify-center"
       >
-        <v-card width="350" height="250" outlined rounded>
-          <v-list-item three-line>
-            <v-list-item-content>
-              <v-list-item-title class="text-h5 mb-1">
-                {{ player.name }}
-              </v-list-item-title>
-              <v-list-item-subtitle v-if="player.duelStartTime">{{
-                player.duelStartTime
-              }}</v-list-item-subtitle>
-              <v-list-item-subtitle v-else class="transparent--text"
-                >never hours ago</v-list-item-subtitle
-              >
-            </v-list-item-content>
-
-            <v-list-item-avatar left size="80" color="primary"
-              ><span class="white--text text-h5">{{
-                player.name
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")
-              }}</span></v-list-item-avatar
-            >
-          </v-list-item>
-
-          <v-list-item
-            class="text-h5 mb-1 text-center d-flex justify-center"
-            v-if="!(player.result[0] === 0 && player.result[1] === 0)"
-          >
-            {{ player.result[0] }} - {{ player.result[1] }}
-          </v-list-item>
-          <v-list-item
-            class="text-h5 mb-1 transparent--text d-flex justify-center"
-            v-else
-          >
-            možel' 2?
-          </v-list-item>
-
-          <v-card-actions>
-            <v-btn
-              v-if="player.status === 'waiting'"
-              x-large
-              color="primary"
-              @click="playADuel(player)"
-              disabled
-              block
-              text
-              >Their Turn</v-btn
-            >
-            <v-btn
-              v-else
-              x-large
-              color="primary"
-              @click="playADuel(player)"
-              block
-              text
-              >{{ player.status }}</v-btn
-            >
-            <!-- <v-btn
-            v-if="
-                      player.status !== 'challenge' &&
-                      player.status !== 'waiting'
-                    "
-              x-large
-              color="error"
-              @click="quitADuel(player.id)"
-              block
-              text
-              >QUIT
-            </v-btn> -->
-          </v-card-actions>
-        </v-card>
+        <PlayerCard :player="player" @eventname="playADuel" :key="player.id" />
       </v-flex>
-      <v-flex md12 sm12 class="pa-2">
-        <v-btn x-large color="primary" @click="goBack()" block>BACK </v-btn>
+      <v-flex xs12 class="pa-2">
+        <v-pagination
+          @input="changePage(page)"
+          v-model="page"
+          :length="pageNumber"
+        ></v-pagination>
+      </v-flex>
+      <v-flex xs12 class="pa-2 text-center">
+        <v-btn x-large color="primary" @click="goBack()" style="width: 300px"
+          >BACK
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -99,20 +38,28 @@
 <script>
 import store from "@/store";
 import { Auth, Users, Duels } from "@/services";
+import PlayerCard from "@/components/PlayerCard";
 
 export default {
   name: "PlayView",
+  components: { PlayerCard },
   data: () => ({
     userId: Auth.state.user.userId,
     players: [],
-    duelAgainst: {},
     allUserRivalries: [],
     snackbar: false,
+    page: 1,
+    pageNumber: 1,
   }),
   methods: {
+    async changePage(page) {
+      const { results, pageNumber } = await this.fetchOrdered(page);
+      this.pageNumber = pageNumber;
+      this.players = await this.preparePlayers(results);
+      window.scrollTo(0, 0);
+    },
     playADuel(player) {
       store.duelAgainst = player;
-      this.duelAgainst = player;
       this.$router.push("/duel/start");
     },
     // quitADuel(playerId) {
@@ -123,6 +70,77 @@ export default {
     // },
     goBack() {
       this.$router.push("/home");
+    },
+    async fetchUser() {
+      const player = await Users.getOne(this.userId);
+      return player;
+    },
+    async fetchOrdered(page) {
+      const users = await Users.getOrdered(this.userId, page - 1);
+      return users;
+    },
+    async preparePlayers(players) {
+      const allRivalries = await this.fetchAllRivalries();
+      const allDuelsSeparated = await this.fetchAllDuels();
+      const {
+        specificPlayerDuelsWhereHeIsBeingChallenged,
+        specificPlayerDuelsWhereHeIsTheChallenger,
+      } = allDuelsSeparated;
+      const allDuels = specificPlayerDuelsWhereHeIsBeingChallenged.concat(
+        specificPlayerDuelsWhereHeIsTheChallenger
+      );
+      return players.map((player) => {
+        const sortedIds =
+          this.userId < player._id
+            ? [this.userId, player._id]
+            : [player._id, this.userId];
+
+        const rivalry = allRivalries.find(
+          (rivalry) =>
+            sortedIds[0] === rivalry.playerOneId &&
+            sortedIds[1] === rivalry.playerTwoId
+        );
+        const score = [0, 0];
+        if (rivalry) {
+          if (this.userId === rivalry.playerOneId) {
+            score[0] = rivalry.playerOneScore;
+            score[1] = rivalry.playerTwoScore;
+          } else {
+            score[0] = rivalry.playerTwoScore;
+            score[1] = rivalry.playerOneScore;
+          }
+        }
+
+        if (player.waiting.includes(this.userId)) {
+          const duel = allDuels.find((duel) => duel.challengerId == player._id);
+          return {
+            id: player._id,
+            name: player.username,
+            duel,
+            score,
+            status: "reply",
+          };
+        } else if (player.reply.includes(this.userId)) {
+          const duel = allDuels.find(
+            (duel) => duel.challengeTakerId == player._id
+          );
+          return {
+            id: player._id,
+            name: player.username,
+            duel,
+            score,
+            status: "waiting",
+          };
+        } else {
+          return {
+            id: player._id,
+            name: player.username,
+            duel: {},
+            score,
+            status: "challenge",
+          };
+        }
+      });
     },
     async fetchAllPlayers() {
       const allPlayers = await Users.getAll();
@@ -136,34 +154,23 @@ export default {
       const allRivalries = await Users.getAllRivalries(this.userId);
       return allRivalries;
     },
-    transformAllPlayers(allPlayers, allDuels, currentUser, allUserRivalries) {
-      const allPlayersTransformed = Users.transformAll(
-        allPlayers,
-        allDuels,
-        currentUser,
-        allUserRivalries
-      );
-      return allPlayersTransformed;
-    },
   },
   async mounted() {
     this.snackbar = store.snackbar;
     setTimeout(() => (store.snackbar = false), 3000);
-    this.duelAgainst = store.duelAgainst;
-    const currentUser = this.userId;
-    this.allUserRivalries = await this.fetchAllRivalries();
-    const allUserRivalries = this.allUserRivalries;
-    const allPlayers = await this.fetchAllPlayers();
-    const allDuels = await this.fetchAllDuels();
-    this.players = this.transformAllPlayers(
-      allPlayers,
-      allDuels,
-      currentUser,
-      allUserRivalries
-    );
+    this.user = await this.fetchUser();
+    const { results, pageNumber } = await this.fetchOrdered(1);
+    this.pageNumber = pageNumber;
+    this.players = await this.preparePlayers(results);
   },
   computed: {
     //
   },
 };
 </script>
+
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
