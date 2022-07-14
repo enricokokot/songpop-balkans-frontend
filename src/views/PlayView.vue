@@ -12,6 +12,7 @@
       <v-flex class="pa-3" xs12>
         <h1 class="text-center">Who do you want to play against?</h1>
       </v-flex>
+      <!-- <v-fade-transition group leave-absolute> -->
       <v-flex
         v-for="player in players"
         :key="player.id"
@@ -19,6 +20,7 @@
       >
         <PlayerCard :player="player" @eventname="playADuel" :key="player.id" />
       </v-flex>
+      <!-- </v-fade-transition> -->
       <v-flex xs12 class="pa-2">
         <v-pagination
           @input="changePage(page)"
