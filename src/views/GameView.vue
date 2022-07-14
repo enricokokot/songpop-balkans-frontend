@@ -5,14 +5,16 @@
       <!-- profile 1 element (1) -->
       <v-flex fill-height text-center xs3 order-xs3 sm2 order-sm1>
         <v-avatar color="primary" size="10vh">
-          <span v-if="user.name" class="white--text text-h5">
-            {{
-              user.name
-                .split(" ")
-                .map((word) => word[0])
-                .join("")
-            }}
-          </span>
+          <v-fade-transition>
+            <span v-if="user.name" class="white--text text-h5">
+              {{
+                user.name
+                  .split(" ")
+                  .map((word) => word[0])
+                  .join("")
+              }}
+            </span>
+          </v-fade-transition>
         </v-avatar>
       </v-flex>
       <!-- rounds element (2) -->
@@ -42,17 +44,19 @@
         <div v-else class="align-center justify-center text-h5">0</div>
       </v-flex>
       <!-- profile 2 element (5) -->
-      <v-flex fill-height text-center xs3 order-xs5 sm2 order-sm5
-        ><div v-if="rival.name" class="align-center justify-center">
-          <v-avatar color="primary" size="10vh">
-            <span class="white--text text-h5">{{
-              rival.name
-                .split(" ")
-                .map((word) => word[0])
-                .join("")
-            }}</span>
-          </v-avatar>
-        </div>
+      <v-flex fill-height text-center xs3 order-xs5 sm2 order-sm5>
+        <v-fade-transition>
+          <div v-if="rival.name" class="align-center justify-center">
+            <v-avatar color="primary" size="10vh">
+              <span class="white--text text-h5">{{
+                rival.name
+                  .split(" ")
+                  .map((word) => word[0])
+                  .join("")
+              }}</span>
+            </v-avatar>
+          </div>
+        </v-fade-transition>
       </v-flex>
     </v-layout>
     <!-- visual game timer area -->
