@@ -23,6 +23,7 @@
       <!-- </v-fade-transition> -->
       <v-flex xs12 class="pa-2">
         <v-pagination
+          v-if="pageNumber > 1"
           @input="changePage(page)"
           v-model="page"
           :length="pageNumber"
