@@ -16,6 +16,10 @@ Vue.use(VueRouter);
 
 const routes = [
   {
+    path: "*",
+    component: HomeView,
+  },
+  {
     path: "/login",
     name: "login",
     component: LoginView,
