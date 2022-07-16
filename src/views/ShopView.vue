@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import store from "@/store";
 import { Auth, Users, Playlists } from "@/services";
 
 export default {
