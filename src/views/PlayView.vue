@@ -139,6 +139,11 @@ export default {
           }
         }
 
+        const achivementText =
+          player.appendedAchievement < 0
+            ? ""
+            : player.achievements[player.appendedAchievement].mission;
+
         if (player.waiting.includes(this.userId)) {
           const duel = allDuels.find((duel) => duel.challengerId == player._id);
           return {
@@ -147,6 +152,10 @@ export default {
             duel,
             score,
             status: "reply",
+            appendedAchievement: {
+              id: player.appendedAchievement,
+              text: achivementText,
+            },
           };
         } else if (player.reply.includes(this.userId)) {
           const duel = allDuels.find(
@@ -158,6 +167,10 @@ export default {
             duel,
             score,
             status: "waiting",
+            appendedAchievement: {
+              id: player.appendedAchievement,
+              text: achivementText,
+            },
           };
         } else {
           return {
@@ -166,6 +179,10 @@ export default {
             duel: {},
             score,
             status: "challenge",
+            appendedAchievement: {
+              id: player.appendedAchievement,
+              text: achivementText,
+            },
           };
         }
       });

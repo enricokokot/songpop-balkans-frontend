@@ -4,18 +4,39 @@
     <v-layout row align-center class="ma-6">
       <!-- profile 1 element (1) -->
       <v-flex fill-height text-center xs3 order-xs3 sm2 order-sm1>
-        <v-avatar color="primary" size="10vh">
-          <v-fade-transition>
-            <span v-if="user.name" class="white--text text-h5">
-              {{
-                user.name
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")
-              }}
-            </span>
-          </v-fade-transition>
-        </v-avatar>
+        <v-badge
+          v-if="user.name && user.appendedAchievement"
+          :value="user.appendedAchievement.id >= 0"
+          bordered
+          bottom
+          color="deep-purple accent-4"
+          offset-x="20"
+          offset-y="20"
+        >
+          <v-tooltip
+            bottom
+            :disabled="user.appendedAchievement.text === '' ? true : false"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-avatar color="primary" size="10vh" v-bind="attrs" v-on="on">
+                <v-fade-transition>
+                  <span
+                    v-if="user.name && user.appendedAchievement"
+                    class="white--text text-h5"
+                  >
+                    {{
+                      user.name
+                        .split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                    }}
+                  </span>
+                </v-fade-transition>
+              </v-avatar>
+            </template>
+            <span>{{ user.appendedAchievement.text }}</span>
+          </v-tooltip>
+        </v-badge>
       </v-flex>
       <!-- rounds element (2) -->
       <v-flex fill-height text-center xs6 order-xs1 sm2 order-sm2
@@ -46,15 +67,41 @@
       <!-- profile 2 element (5) -->
       <v-flex fill-height text-center xs3 order-xs5 sm2 order-sm5>
         <v-fade-transition>
-          <div v-if="rival.name" class="align-center justify-center">
-            <v-avatar color="primary" size="10vh">
-              <span class="white--text text-h5">{{
-                rival.name
-                  .split(" ")
-                  .map((word) => word[0])
-                  .join("")
-              }}</span>
-            </v-avatar>
+          <div
+            v-if="rival.name && rival.appendedAchievement"
+            class="align-center justify-center"
+          >
+            <v-badge
+              :value="rival.appendedAchievement.id > 0"
+              bordered
+              bottom
+              left
+              color="deep-purple accent-4"
+              offset-x="20"
+              offset-y="20"
+            >
+              <v-tooltip
+                bottom
+                :disabled="rival.appendedAchievement.text === '' ? true : false"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-avatar
+                    color="primary"
+                    size="10vh"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <span class="white--text text-h5">{{
+                      rival.name
+                        .split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                    }}</span>
+                  </v-avatar>
+                </template>
+                <span>{{ rival.appendedAchievement.text }}</span>
+              </v-tooltip>
+            </v-badge>
           </div>
         </v-fade-transition>
       </v-flex>
@@ -130,8 +177,11 @@ export default {
   name: "GameView",
   components: { RoundAnswers },
   data: () => ({
-    user: { pointsEarned: [0, 0, 0] },
-    rival: { pointsEarned: [0, 0, 0] },
+    user: {
+      achievements: [],
+      pointsEarned: [0, 0, 0],
+    },
+    rival: { appendedAchievement: -1, pointsEarned: [0, 0, 0] },
     duel: {},
     currentRound: 0,
     roundDetails: {},
@@ -250,7 +300,6 @@ export default {
   async mounted() {
     const userDetails = await this.fetchCurrentUser();
     const duelDetails = store.duelAgainst;
-
     const roundKeys = Object.keys(duelDetails.duel.rounds);
     const givenAnswers = roundKeys.map(
       (roundKey) => duelDetails.duel.rounds[roundKey].playerAnswer
@@ -277,6 +326,13 @@ export default {
       givenAnswers: ["", "", ""],
       answerTimes: [0, 0, 0],
       pointsEarned: [0, 0, 0],
+      appendedAchievement: {
+        id: userDetails.appendedAchievement,
+        text:
+          userDetails.appendedAchievement >= 0
+            ? userDetails.achievements[userDetails.appendedAchievement].mission
+            : "",
+      },
     };
     this.rival = {
       id: duelDetails.id,
@@ -284,6 +340,7 @@ export default {
       givenAnswers,
       answerTimes,
       pointsEarned,
+      appendedAchievement: duelDetails.appendedAchievement,
     };
     this.duel = {
       id: duelDetails.duel._id,

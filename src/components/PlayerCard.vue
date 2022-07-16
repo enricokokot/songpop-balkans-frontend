@@ -13,14 +13,38 @@
         >
       </v-list-item-content>
 
-      <v-list-item-avatar v-if="player.name" left size="80" color="primary"
-        ><span class="white--text text-h5">{{
-          player.name
-            .split(" ")
-            .map((word) => word[0])
-            .join("")
-        }}</span></v-list-item-avatar
+      <v-badge
+        v-if="player.name && player.appendedAchievement"
+        :value="player.appendedAchievement.id >= 0"
+        bordered
+        bottom
+        color="deep-purple accent-4"
+        offset-x="35"
+        offset-y="35"
       >
+        <v-tooltip
+          bottom
+          :disabled="player.appendedAchievement.text === '' ? true : false"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-list-item-avatar
+              v-if="player.name"
+              left
+              size="80"
+              color="primary"
+              v-bind="attrs"
+              v-on="on"
+              ><span class="white--text text-h5">{{
+                player.name
+                  .split(" ")
+                  .map((word) => word[0])
+                  .join("")
+              }}</span></v-list-item-avatar
+            >
+          </template>
+          <span>{{ player.appendedAchievement.text }}</span>
+        </v-tooltip>
+      </v-badge>
     </v-list-item>
 
     <v-list-item
