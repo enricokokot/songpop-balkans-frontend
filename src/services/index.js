@@ -81,6 +81,13 @@ const Users = {
     const data = response.data;
     return data;
   },
+  async appendAchievement(userId, achievementId) {
+    const response = await Service.put(
+      `/user/${userId}/achievement/${achievementId}`
+    );
+    const data = response.data;
+    return data;
+  },
   async updateAchievement(userId, achievementId) {
     const response = await Service.patch(
       `/user/${userId}/achievement/${achievementId}`
