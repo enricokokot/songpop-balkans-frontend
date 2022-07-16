@@ -31,18 +31,18 @@
           <h3 v-if="!enemyHasPlayed">
             We've sent your challenge to {{ rival.name.split(" ")[0] }} :)
           </h3>
-          <h3 v-else-if="userScore > rivalScore">
+          <h3 v-else-if="userScore > rivalScore" class="text-center">
             Congratulations, you've earned your 3 coins!
           </h3>
-          <h3 v-else-if="userScore < rivalScore">
+          <h3 v-else-if="userScore < rivalScore" class="text-center">
             The enemy was better, hope this (1) coin will help...
           </h3>
-          <h3 v-else>
+          <h3 v-else class="text-center">
             It seems you've found your match, you've both earned 2 coins!
           </h3>
         </v-row>
         <v-row class="align-center justify-center pa-2">
-          <v-btn x-large color="primary" @click="goBack()" width="25%"
+          <v-btn x-large color="primary" @click="goBack()" style="width: 300px"
             >CONTINUE</v-btn
           >
         </v-row>
