@@ -72,6 +72,7 @@ export default {
   }),
   methods: {
     async filter() {
+      this.page = 1;
       const { results, pageNumber } = await this.fetchOrdered();
       this.pageNumber = pageNumber;
       this.players = await this.preparePlayers(results);
