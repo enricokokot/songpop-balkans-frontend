@@ -40,16 +40,18 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { Auth, Users, Playlists } from "@/services";
+import { Playlist } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "ShopView",
   data: () => ({
     userId: Auth.state.user.userId,
     coins: 0,
-    playlists: [],
-    allPlaylists: [],
+    playlists: [] as string[],
+    allPlaylists: [] as Playlist[],
   }),
   methods: {
     goBack() {
@@ -67,7 +69,7 @@ export default {
       const playlists = await Playlists.getAll();
       return playlists;
     },
-    async buyPlaylist(playlist) {
+    async buyPlaylist(playlist: { title: string }) {
       const data = {
         playerId: this.userId,
         playlistTitle: playlist.title,
@@ -88,7 +90,7 @@ export default {
   computed: {
     //
   },
-};
+});
 </script>
 
 <style>

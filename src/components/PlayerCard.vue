@@ -93,19 +93,26 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import moment from "moment";
+import { Player } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "PlayerCard",
-  props: ["player"],
+  // props: ["player"],
+  props: {
+    player: {
+      type: Object as () => Player,
+    },
+  },
   methods: {
-    playADuel(player) {
+    playADuel(player: { name: string }) {
       this.$emit("eventname", player);
     },
-    prettifyTime(time) {
+    prettifyTime(time: number) {
       return time !== undefined ? moment(time).fromNow() : "";
     },
   },
-};
+});
 </script>

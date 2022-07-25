@@ -42,33 +42,36 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { Auth, Users, Playlists } from "@/services";
+import { Playlist } from "@/types";
 
-export default {
+export default Vue.extend({
   data: () => ({
     show: false,
     valid: true,
     username: "",
     nameRules: [
-      (v) => !!v || "username is required",
-      (v) => v.indexOf(" ") < 0 || "username can't contain whitespaces",
+      (v: string) => !!v || "username is required",
+      (v: string) => v.indexOf(" ") < 0 || "username can't contain whitespaces",
     ],
     password: "",
-    passwordRules: [(v) => !!v || "password is required"],
+    passwordRules: [(v: string) => !!v || "password is required"],
     select: null,
-    playlistRules: [(v) => !!v || "playlist is required"],
+    playlistRules: [(v: string) => !!v || "playlist is required"],
     playlists: [],
   }),
   async mounted() {
     const rawPlaylists = await Playlists.getAll();
-    this.playlists = await rawPlaylists.map((playlist) => {
+    this.playlists = await rawPlaylists.map((playlist: Playlist) => {
       return { title: playlist.title, isEmpty: playlist.songs.length < 12 };
     });
   },
   methods: {
     validate() {
-      this.$refs.form.validate() && this.register("/home");
+      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+        this.register();
     },
     async register() {
       const data = {
@@ -82,5 +85,5 @@ export default {
       success && this.$router.push("/home");
     },
   },
-};
+});
 </script>

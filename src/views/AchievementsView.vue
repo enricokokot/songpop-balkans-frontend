@@ -47,24 +47,26 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { Auth, Users } from "@/services";
+import { Achievement } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "AchievementsView",
   data: () => ({
-    user: {},
+    user: { achievements: [], appendedAchievement: -1 },
     userId: Auth.state.user.userId,
-    achievements: [],
-    appendedAchievement: null,
+    achievements: [] as Achievement[],
+    appendedAchievement: -1,
   }),
   methods: {
     goBack() {
       this.$router.back();
     },
-    append(achievementId) {
+    append(achievementId: number) {
       this.appendedAchievement =
-        this.appendedAchievement == achievementId ? null : achievementId;
+        this.appendedAchievement == achievementId ? -1 : achievementId;
       Users.appendAchievement(this.userId, achievementId);
     },
     async fetchUser() {
@@ -80,5 +82,5 @@ export default {
   computed: {
     //
   },
-};
+});
 </script>

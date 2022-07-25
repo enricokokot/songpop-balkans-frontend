@@ -32,28 +32,30 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { Auth } from "@/services";
 
-export default {
+export default Vue.extend({
   data: () => ({
     show: false,
     valid: true,
     username: "",
-    nameRules: [(v) => !!v || "username is required"],
+    nameRules: [(v: string) => !!v || "username is required"],
     password: "",
-    passwordRules: [(v) => !!v || "password is required"],
+    passwordRules: [(v: string) => !!v || "password is required"],
     select: null,
   }),
 
   methods: {
     validate() {
-      this.$refs.form.validate() && this.login();
+      (this.$refs.form as Vue & { validate: () => boolean }).validate() &&
+        this.login();
     },
     async login() {
       const success = await Auth.login(this.username, this.password);
       success && this.$router.push("/home");
     },
   },
-};
+});
 </script>

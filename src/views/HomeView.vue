@@ -35,11 +35,12 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import store from "@/store";
 import { Auth, Users } from "@/services";
 
-export default {
+export default Vue.extend({
   name: "HomeView",
   data: () => ({
     userId: Auth.state.user.userId,
@@ -66,5 +67,5 @@ export default {
   computed: {
     //
   },
-};
+});
 </script>

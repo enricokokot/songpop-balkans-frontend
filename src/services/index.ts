@@ -2,6 +2,7 @@ import axios from "axios";
 
 import store from "@/store";
 import $router from "@/router";
+import { Rounds } from "@/types";
 
 const Service = axios.create({
   baseURL: "https://songpop-balkans.herokuapp.com/",
@@ -12,7 +13,11 @@ const Service = axios.create({
 
 Service.interceptors.request.use((request) => {
   try {
-    request.headers["Authorization"] = "Bearer " + Auth.getToken();
+    if (request.headers === undefined) {
+      throw new Error("request.headers is undefined");
+    } else {
+      request.headers["Authorization"] = "Bearer " + Auth.getToken();
+    }
   } catch (e) {
     console.error(e);
   }
@@ -32,19 +37,23 @@ Service.interceptors.response.use(
     }
     if (error.response.status == 401) {
       Auth.logout();
-      $router.go();
+      $router.go(100);
     }
     // console.error('Interceptor', error.response);
   }
 );
 
 const Users = {
-  async register(userData) {
+  async register(userData: {
+    username: string;
+    password: string;
+    playlist: string | null;
+  }) {
     const response = await Service.post(`/user`, userData);
     const data = response.data;
     return data;
   },
-  async getOne(id) {
+  async getOne(id: string) {
     const response = await Service.get(`/user/${id}`);
     const data = response.data;
     return data;
@@ -54,41 +63,41 @@ const Users = {
     const data = response.data;
     return data;
   },
-  async getOrdered(id, page, username) {
+  async getOrdered(id: string, page: number, username: string) {
     const response = await Service.get(
       `/user/${id}/ordered?page=${page}&username=${username}`
     );
     const data = response.data;
     return data;
   },
-  async getCoins(userId) {
+  async getCoins(userId: string) {
     const response = await Service.get(`/user/${userId}/coin`);
     const data = response.data;
     return data.availableCoins;
   },
-  async getAllAchievements(userId) {
+  async getAllAchievements(userId: string) {
     const response = await Service.get(`/user/${userId}/achievement`);
     const data = response.data;
     return data;
   },
-  async getPlaylists(userId) {
+  async getPlaylists(userId: string) {
     const response = await Service.get(`/user/${userId}/playlist`);
     const data = response.data;
     return data;
   },
-  async getAllRivalries(userId) {
+  async getAllRivalries(userId: string) {
     const response = await Service.get(`/user/${userId}/rivalry`);
     const data = response.data;
     return data;
   },
-  async appendAchievement(userId, achievementId) {
+  async appendAchievement(userId: string, achievementId: number) {
     const response = await Service.put(
       `/user/${userId}/achievement/${achievementId}`
     );
     const data = response.data;
     return data;
   },
-  async updateAchievement(userId, achievementId) {
+  async updateAchievement(userId: string, achievementId: number) {
     const response = await Service.patch(
       `/user/${userId}/achievement/${achievementId}`
     );
@@ -98,17 +107,23 @@ const Users = {
 };
 
 const Duels = {
-  async getAll(userId) {
+  async getAll(userId: string) {
     const response = await Service.get(`/duel/${userId}`);
     const data = response.data;
     return data;
   },
-  async start(data) {
+  async start(data: {
+    challengerId: string;
+    challengeTakerId: string;
+    playlist: string;
+    challengerScore: number;
+    roundsData: Rounds;
+  }) {
     const response = await Service.post(`/duel/start`, data);
     const responseData = response.data;
     return responseData;
   },
-  async end(data) {
+  async end(data: { duelId: string; challengeeScore: number }) {
     const response = await Service.put(`/duel/end`, data);
     const responseData = response.data;
     return responseData;
@@ -116,7 +131,7 @@ const Duels = {
 };
 
 const Playlists = {
-  async getOne(id) {
+  async getOne(id: string) {
     const response = await Service.get(`/playlist/${id}`);
     const data = response.data;
     return data;
@@ -126,12 +141,12 @@ const Playlists = {
     const data = response.data;
     return data;
   },
-  async buy(data) {
+  async buy(data: { playerId: string; playlistTitle: string }) {
     const response = await Service.put(`/playlist/buy`, data);
     const responseData = response.data;
     return responseData;
   },
-  async generateGame(id) {
+  async generateGame(id: string) {
     const response = await Service.get(`/playlist/${id}/game`);
     const data = response.data;
     return data;
@@ -139,7 +154,7 @@ const Playlists = {
 };
 
 const Songs = {
-  async getAudio(id) {
+  async getAudio(id: string) {
     const response = await Service.get(`/song/${id}/audio`, {
       responseType: "arraybuffer",
       headers: {
@@ -152,7 +167,7 @@ const Songs = {
 };
 
 const Auth = {
-  async login(username, password) {
+  async login(username: string, password: string) {
     const response = await Service.post("/auth", {
       username,
       // good to hash password here before it starts travel
@@ -177,7 +192,13 @@ const Auth = {
   },
 
   getUser() {
-    return JSON.parse(localStorage.getItem("user"));
+    const userIsString = function (user: string | null): user is string {
+      return typeof user === "string";
+    };
+    const user: string | null = localStorage.getItem("user");
+    if (userIsString(user)) {
+      return JSON.parse(user);
+    }
   },
 
   authenticated() {
