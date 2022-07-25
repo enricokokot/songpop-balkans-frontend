@@ -33,7 +33,7 @@
         :key="player.id"
         class="pa-3 d-flex justify-center"
       >
-        <PlayerCard :player="player" @eventname="playADuel" :key="player.id" />
+        <PlayerCard :player="player" @eventname="playADuel" />
       </v-flex>
       <!-- </v-fade-transition> -->
       <v-flex xs12 class="pa-2">
@@ -53,17 +53,19 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import store from "@/store";
 import { Auth, Users, Duels } from "@/services";
-import PlayerCard from "@/components/PlayerCard";
+import PlayerCard from "@/components/PlayerCard.vue";
+import { Duel, DuelAgainst, Player, PlayerRaw, Rivalry } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "PlayView",
   components: { PlayerCard },
   data: () => ({
     userId: Auth.state.user.userId,
-    players: [],
+    players: [] as Player[],
     allUserRivalries: [],
     snackbar: false,
     page: 1,
@@ -76,13 +78,13 @@ export default {
       this.pageNumber = pageNumber;
       this.players = await this.preparePlayers(results);
     },
-    async changePage(page) {
+    async changePage(page: number) {
       const { results, pageNumber } = await this.fetchOrdered();
       this.pageNumber = pageNumber;
       this.players = await this.preparePlayers(results);
       window.scrollTo(0, 0);
     },
-    playADuel(player) {
+    playADuel(player: DuelAgainst) {
       store.duelAgainst = player;
       this.$router.push("/duel/start");
     },
@@ -107,7 +109,7 @@ export default {
       );
       return users;
     },
-    async preparePlayers(players) {
+    async preparePlayers(players: PlayerRaw[]) {
       const allRivalries = await this.fetchAllRivalries();
       const allDuelsSeparated = await this.fetchAllDuels();
       const {
@@ -117,14 +119,13 @@ export default {
       const allDuels = specificPlayerDuelsWhereHeIsBeingChallenged.concat(
         specificPlayerDuelsWhereHeIsTheChallenger
       );
-      return players.map((player) => {
+      return players.map((player: PlayerRaw) => {
         const sortedIds =
           this.userId < player._id
             ? [this.userId, player._id]
             : [player._id, this.userId];
-
         const rivalry = allRivalries.find(
-          (rivalry) =>
+          (rivalry: Rivalry) =>
             sortedIds[0] === rivalry.playerOneId &&
             sortedIds[1] === rivalry.playerTwoId
         );
@@ -145,7 +146,13 @@ export default {
             : player.achievements[player.appendedAchievement].mission;
 
         if (player.waiting.includes(this.userId)) {
-          const duel = allDuels.find((duel) => duel.challengerId == player._id);
+          const gottenDuel = allDuels.find(
+            (duel: Duel) => duel.challengerId == player._id
+          );
+          const duel =
+            typeof gottenDuel.playlist !== "string"
+              ? { ...gottenDuel, playlist: gottenDuel.playlist.title }
+              : gottenDuel.playlist.title;
           return {
             id: player._id,
             name: player.username,
@@ -158,9 +165,13 @@ export default {
             },
           };
         } else if (player.reply.includes(this.userId)) {
-          const duel = allDuels.find(
-            (duel) => duel.challengeTakerId == player._id
+          const gottenDuel = allDuels.find(
+            (duel: Duel) => duel.challengeTakerId == player._id
           );
+          const duel =
+            typeof gottenDuel.playlist !== "string"
+              ? { ...gottenDuel, playlist: gottenDuel.playlist.title }
+              : gottenDuel.playlist.title;
           return {
             id: player._id,
             name: player.username,
@@ -203,15 +214,14 @@ export default {
   async mounted() {
     this.snackbar = store.snackbar;
     setTimeout(() => (store.snackbar = false), 3000);
-    this.user = await this.fetchUser();
-    const { results, pageNumber } = await this.fetchOrdered(1);
+    const { results, pageNumber } = await this.fetchOrdered();
     this.pageNumber = pageNumber;
     this.players = await this.preparePlayers(results);
   },
   computed: {
     //
   },
-};
+});
 </script>
 
 <style>

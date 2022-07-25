@@ -72,7 +72,7 @@
             class="align-center justify-center"
           >
             <v-badge
-              :value="rival.appendedAchievement.id > 0"
+              :value="rival.appendedAchievement.id >= 0"
               bordered
               bottom
               left
@@ -168,47 +168,99 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import store from "@/store";
 import { Auth, Users, Songs } from "@/services";
-import RoundAnswers from "@/components/RoundAnswers";
+import { User, Rival, DuelAgainst, RoundDetails } from "@/types";
+import RoundAnswers from "@/components/RoundAnswers.vue";
 
-export default {
+export default Vue.extend({
   name: "GameView",
   components: { RoundAnswers },
   data: () => ({
     user: {
+      id: "",
+      name: "",
       achievements: [],
       pointsEarned: [0, 0, 0],
-    },
-    rival: { appendedAchievement: -1, pointsEarned: [0, 0, 0] },
-    duel: {},
+      givenAnswers: ["", "", ""],
+      answerTimes: [0, 0, 0],
+      appendedAchievement: {
+        id: -1,
+        text: "",
+      },
+    } as User,
+    rival: {
+      id: "",
+      appendedAchievement: {
+        id: -1,
+        text: "",
+      },
+      pointsEarned: [0, 0, 0],
+      givenAnswers: ["", "", ""],
+      answerTimes: [0, 0, 0],
+      name: "",
+    } as Rival,
+    duel: {
+      id: "",
+      name: "",
+      status: "",
+      offeredAnswers: [[], [], []],
+      correctAnswers: [],
+      correctAnswersIds: [],
+      _id: "",
+      startTime: 0,
+      playlist: "",
+      resultSoFar: [],
+      challengerId: "",
+      challengeTakerId: "",
+      duel: {
+        id: "",
+        _id: "",
+        time: 0,
+        rounds: {},
+        playlist: "",
+        offeredAnswers: [[], [], []],
+        correctAnswers: [],
+        correctAnswersIds: [],
+        challengerId: "",
+        challengeTakerId: "",
+      },
+      appendedAchievement: {
+        id: -1,
+        text: "",
+      },
+      score: [],
+      time: 0,
+      rounds: {},
+    } as DuelAgainst,
     currentRound: 0,
-    roundDetails: {},
+    roundDetails: {} as RoundDetails,
     answerGiven: false,
     gameTimePassed: false,
     gameTimer: 130,
-    userId: Auth.state.user.userId,
+    userId: Auth.state.user.userId as string,
     dynamicPlayerTotal: 0,
     dynamicRivalTotal: 0,
-    ctx: {},
-    currGain: {},
-    gainNode: {},
+    ctx: {} as AudioContext,
+    currGain: 0,
+    gainNode: {} as GainNode,
     songIsPlaying: false,
   }),
   methods: {
-    mirror(number) {
+    mirror(number: number) {
       const maxNumber = 100;
       const middleNumber = maxNumber / 2;
       return number <= middleNumber
         ? middleNumber - number + middleNumber
         : middleNumber - (number - middleNumber);
     },
-    async fetchASongAudio(songId) {
+    async fetchASongAudio(songId: string) {
       const songAudio = await Songs.getAudio(songId);
       return songAudio;
     },
-    answer(songId) {
+    answer(songId: string) {
       const currentRound = this.currentRound;
       this.user.givenAnswers[currentRound] = songId;
       const playerAnswer = this.user.givenAnswers[currentRound];
@@ -225,7 +277,6 @@ export default {
       const currentRound = this.currentRound;
       const duel = this.duel;
       const rival = this.rival;
-
       const roundAnswers = duel.offeredAnswers[currentRound];
       const roundCorrectAnswer = duel.correctAnswers[currentRound];
       const roundRivalAnswer = rival.givenAnswers[currentRound];
@@ -241,10 +292,10 @@ export default {
 
       const songAudioId = duel.correctAnswersIds[currentRound];
       const songAudio = await this.fetchASongAudio(songAudioId);
-      //   const songAudio = store.songAudios[this.currentRound];
+      // const songAudio = store.songAudios[this.currentRound];
 
       const ctx = new AudioContext();
-      let decodedAudio = {};
+      let decodedAudio = {} as AudioBuffer;
       try {
         decodedAudio = await ctx.decodeAudioData(songAudio);
       } catch (e) {
@@ -259,13 +310,13 @@ export default {
       let currGain = gainNode.gain.value;
       source.connect(gainNode);
       gainNode.connect(ctx.destination);
-      this.playSong(source, ctx);
+      this.playSong(source);
 
       this.gainNode = gainNode;
       this.currGain = currGain;
       this.ctx = ctx;
     },
-    playSong(source) {
+    playSong(source: AudioBufferSourceNode) {
       setTimeout(() => source.start(), 2500);
     },
     stopSong() {
@@ -300,12 +351,13 @@ export default {
   async mounted() {
     const userDetails = await this.fetchCurrentUser();
     const duelDetails = store.duelAgainst;
-    const roundKeys = Object.keys(duelDetails.duel.rounds);
+    const roundKeysBefore = Object.keys(duelDetails.duel.rounds);
+    const roundKeys = roundKeysBefore.map((key) => Number(key));
     const givenAnswers = roundKeys.map(
-      (roundKey) => duelDetails.duel.rounds[roundKey].playerAnswer
+      (roundKey) => duelDetails.duel.rounds[roundKey].playerAnswer || ""
     );
     const answerTimes = roundKeys.map(
-      (roundKey) => duelDetails.duel.rounds[roundKey].playerTimeAnswered
+      (roundKey) => duelDetails.duel.rounds[roundKey].playerTimeAnswered || 0
     );
     const pointsEarned = roundKeys.map(
       (roundKey) => duelDetails.duel.rounds[roundKey].playerPointsEarned
@@ -323,7 +375,7 @@ export default {
     this.user = {
       id: userDetails.id,
       name: userDetails.username,
-      givenAnswers: ["", "", ""],
+      givenAnswers: givenAnswers,
       answerTimes: [0, 0, 0],
       pointsEarned: [0, 0, 0],
       appendedAchievement: {
@@ -333,6 +385,7 @@ export default {
             ? userDetails.achievements[userDetails.appendedAchievement].mission
             : "",
       },
+      achievements: userDetails.achievements,
     };
     this.rival = {
       id: duelDetails.id,
@@ -347,11 +400,20 @@ export default {
       startTime: duelDetails.duel.time,
       playlist: duelDetails.duel.playlist,
       resultSoFar: duelDetails.score,
-      offeredAnswers,
+      offeredAnswers: offeredAnswers,
       correctAnswers,
       correctAnswersIds,
+      name: duelDetails.name,
+      status: duelDetails.status,
+      _id: duelDetails._id,
+      duel: duelDetails.duel,
+      appendedAchievement: duelDetails.appendedAchievement,
+      score: duelDetails.score,
+      time: 0,
+      rounds: {},
+      challengerId: this.user.id,
+      challengeTakerId: this.rival.id,
     };
-
     this.prepareForTheNextRound();
   },
   computed: {
@@ -365,7 +427,7 @@ export default {
       const resultAfterAnswer = this.user.pointsEarned
         .slice(0, this.currentRound + 1)
         .reduce((prev, curr) => prev + curr, 0);
-      return this.roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
+      return (this as any).roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
     },
     rivalTotal() {
       const resultBeforeAnswer = this.rival.pointsEarned
@@ -374,7 +436,7 @@ export default {
       const resultAfterAnswer = this.rival.pointsEarned
         .slice(0, this.currentRound + 1)
         .reduce((prev, curr) => prev + curr, 0);
-      return this.roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
+      return (this as any).roundIsOver ? resultAfterAnswer : resultBeforeAnswer;
     },
   },
   watch: {
@@ -396,7 +458,7 @@ export default {
       this.roundIsOver && setTimeout(() => this.nextRound(), 2000);
     },
     playerTotal() {
-      let interval = false;
+      let interval: number | boolean = false;
       // clearInterval(interval);
 
       if (this.playerTotal == this.dynamicPlayerTotal) {
@@ -412,7 +474,7 @@ export default {
       }, 20);
     },
     rivalTotal() {
-      let interval = false;
+      let interval: number | boolean = false;
       // clearInterval(interval);
 
       if (this.rivalTotal == this.dynamicRivalTotal) {
@@ -428,5 +490,5 @@ export default {
       }, 20);
     },
   },
-};
+});
 </script>

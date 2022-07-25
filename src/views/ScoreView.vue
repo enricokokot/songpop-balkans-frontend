@@ -25,11 +25,24 @@
           <h3>You've managed to earn a result of</h3>
         </v-row>
         <v-row class="align-center justify-center pa-2">
-          <h3>{{ userScore }}{{ enemyHasPlayed ? ` - ${rivalScore}` : "" }}</h3>
+          <h3>
+            {{ userScore
+            }}{{
+              enemyHasPlayed === "undefinedundefinedundefined" ||
+              enemyHasGivenAnswer === 0
+                ? ` - ${rivalScore}`
+                : ""
+            }}
+          </h3>
         </v-row>
         <v-row class="align-center justify-center pa-2">
-          <h3 v-if="!enemyHasPlayed">
-            We've sent your challenge to {{ rival.name.split(" ")[0] }} :)
+          <h3
+            v-if="
+              enemyHasPlayed !== 'undefinedundefinedundefined' ||
+              enemyHasGivenAnswer !== 0
+            "
+          >
+            We've sent your challenge to {{ rival.name.split(" ")[0] }}!
           </h3>
           <h3 v-else-if="userScore > rivalScore" class="text-center">
             Congratulations, you've earned your 3 coins!
@@ -51,21 +64,24 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import store from "@/store";
 import { Auth, Users, Duels } from "@/services";
+import { Rival, Round, Rounds } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "HomeView",
   data: () => ({
-    enemyHasPlayed: true,
+    enemyHasPlayed: "",
+    enemyHasGivenAnswer: 0,
     multiLine: true,
     snackbar1: false,
     snackbar2: false,
     text1: `Congratulations, you've earned the 'Earn a score of 250' achievement!`,
     text2: `Congratulations, you've earned the 'Earn a score of 300' achievement!`,
-    userId: Auth.state.user.userId,
-    rival: { name: "" },
+    userId: Auth.state.user.userId as string,
+    rival: {} as Rival,
     userScore: 0,
     rivalScore: 0,
   }),
@@ -73,15 +89,21 @@ export default {
     goBack() {
       this.$router.replace("/duel");
     },
-    async startADuel(data) {
+    async startADuel(data: {
+      challengerId: string;
+      challengeTakerId: string;
+      playlist: string;
+      challengerScore: number;
+      roundsData: Rounds;
+    }) {
       const response = await Duels.start(data);
       return response;
     },
-    async endADuel(data) {
+    async endADuel(data: { duelId: string; challengeeScore: number }) {
       const response = await Duels.end(data);
       return response;
     },
-    async updateAnAchievement(achievementId) {
+    async updateAnAchievement(achievementId: number) {
       const usersPlaylists = await Users.updateAchievement(
         this.userId,
         achievementId
@@ -99,33 +121,43 @@ export default {
       0
     );
     const { offeredAnswers, correctAnswers, correctAnswersIds } = duel;
-    const rounds = {
+    const rounds: { [key: number]: Round } = {
       0: {
         songs: [],
         correctAnswer: "",
-        correctAnswerId: 0,
+        correctAnswerId: "",
         pointsEarned: 0,
         timeAnswered: 0,
         answer: "",
+        playerTimeAnswered: 0,
+        playerPointsEarned: 0,
+        playerAnswer: "",
       },
       1: {
         songs: [],
         correctAnswer: "",
-        correctAnswerId: 0,
+        correctAnswerId: "",
         pointsEarned: 0,
         timeAnswered: 0,
         answer: "",
+        playerTimeAnswered: 0,
+        playerPointsEarned: 0,
+        playerAnswer: "",
       },
       2: {
         songs: [],
         correctAnswer: "",
-        correctAnswerId: 0,
+        correctAnswerId: "",
         pointsEarned: 0,
         timeAnswered: 0,
         answer: "",
+        playerTimeAnswered: 0,
+        playerPointsEarned: 0,
+        playerAnswer: "",
       },
     };
-    const roundKeys = Object.keys(rounds);
+    const beforeRoundKeys = Object.keys(rounds);
+    const roundKeys = beforeRoundKeys.map((key) => Number(key));
     roundKeys.forEach(
       (roundKey) => (rounds[roundKey].songs = offeredAnswers[roundKey])
     );
@@ -149,7 +181,7 @@ export default {
     const startDuelData = {
       challengerId: this.userId,
       challengeTakerId: rivalId,
-      playlist: playlist,
+      playlist,
       challengerScore: userScore,
       roundsData: rounds,
     };
@@ -160,10 +192,18 @@ export default {
     /* TODO: could cause significant bugs, fix ASAP */
     const enemyHasPlayed = rival.givenAnswers.reduce(
       (prev, curr) => prev + curr,
+      ""
+    );
+    const enemyHasGivenAnswer = rival.answerTimes.reduce(
+      (prev, curr) => prev + curr,
       0
     );
-    this.enemyHasPlayed = enemyHasPlayed;
-    if (!enemyHasPlayed) {
+    this.enemyHasGivenAnswer = enemyHasGivenAnswer;
+
+    if (
+      enemyHasPlayed === "undefinedundefinedundefined" ||
+      enemyHasGivenAnswer === 0
+    ) {
       this.startADuel(startDuelData);
     } else {
       this.endADuel(endDuelData);
@@ -185,10 +225,10 @@ export default {
     this.rival = rival;
     this.userScore = userScore;
     this.rivalScore = rivalScore;
-    store.duelResults = {};
+    // store.duelResults = {};
   },
   computed: {
     //
   },
-};
+});
 </script>

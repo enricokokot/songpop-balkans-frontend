@@ -83,24 +83,53 @@
   </v-container>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Duel, Rival, RoundDetails, User } from "@/types";
+import Vue from "vue";
+
+export default Vue.extend({
   name: "RoundAnswers",
-  props: [
-    "roundDetails",
-    "user",
-    "duel",
-    "rival",
-    "currentRound",
-    "gameTimer",
-    "roundIsOver",
-    "answerGiven",
-  ],
+  props: {
+    duel: {
+      type: Object as () => Duel,
+    },
+    user: {
+      type: Object as () => User,
+    },
+    rival: {
+      type: Object as () => Rival,
+    },
+    gameTimer: {
+      type: Number,
+    },
+    currentRound: {
+      type: Number,
+    },
+    roundDetails: {
+      type: Object as () => RoundDetails,
+    },
+    roundIsOver: {
+      type: Boolean,
+    },
+    answerGiven: {
+      type: Boolean,
+    },
+  },
+  // props: [
+  //   "roundDetails",
+  //   "user",
+  //   "duel",
+  //   "rival",
+  //   "currentRound",
+  //   "gameTimer",
+  //   "roundIsOver",
+  //   "answerGiven",
+  // ],
   data: () => ({
     //
   }),
   methods: {
-    giveAnswer(songId) {
+    giveAnswer(songId: string) {
       this.$emit("eventname", songId);
     },
   },
@@ -113,7 +142,7 @@ export default {
   watch: {
     //
   },
-};
+});
 </script>
 
 <style>

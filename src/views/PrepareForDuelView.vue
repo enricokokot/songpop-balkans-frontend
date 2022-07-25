@@ -3,9 +3,12 @@
     <v-row class="align-center justify-center">
       <v-col v-if="duelAgainst.status === 'reply'">
         <v-row class="align-center justify-center pa-2">
-          <h1 v-if="duelAgainst.name" class="text-center">
+          <h1
+            v-if="duelAgainst.name && duelAgainst.duel.playlist"
+            class="text-center"
+          >
             {{ duelAgainst.name.split(" ")[0] }} has challenged you in
-            {{ duelAgainst.duel.playlist.title }}
+            {{ duelAgainst.duel.playlist }}
           </h1>
         </v-row>
         <v-row class="align-center justify-center"
@@ -59,14 +62,16 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import store from "@/store";
 import { Auth, Users, Playlists } from "@/services";
+import { DuelAgainst } from "@/types";
 
-export default {
+export default Vue.extend({
   name: "PrepareForDuelView",
   data: () => ({
-    duelAgainst: {},
+    duelAgainst: {} as DuelAgainst,
     playlists: [],
     userId: Auth.state.user.userId,
   }),
@@ -78,7 +83,7 @@ export default {
       const usersPlaylists = await Users.getPlaylists(this.userId);
       return usersPlaylists;
     },
-    async generateAGame(playlistId) {
+    async generateAGame(playlistId: string) {
       const game = await Playlists.generateGame(playlistId);
       this.duelAgainst.duel.rounds = game.roundsData;
       this.duelAgainst.duel.playlist = game.playlistId;
@@ -98,5 +103,5 @@ export default {
   computed: {
     //
   },
-};
+});
 </script>

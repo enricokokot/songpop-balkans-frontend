@@ -6,7 +6,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import LoginForm from "@/components/LoginForm.vue";
 import SigninForm from "@/components/SigninForm.vue";
 import { Auth } from "@/services";

@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar v-if="!$route.meta.hideNavbar" app class="indigo" dark>
+    <v-app-bar v-if="isVisible" app class="indigo" dark>
       <div class="d-flex align-center">
         <router-link style="text-decoration: none; color: inherit" to="/home">
           <h2>SONGPOP BALKANS</h2>
@@ -25,10 +25,11 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from "vue";
 import { Auth } from "@/services";
 
-export default {
+export default Vue.extend({
   name: "App",
 
   data: () => ({
@@ -41,10 +42,16 @@ export default {
     },
     logout() {
       Auth.logout();
-      this.$router.go();
+      this.$router.replace("/login");
     },
   },
-};
+
+  computed: {
+    isVisible(): boolean {
+      return !this.$route.meta?.hideNavbar;
+    },
+  },
+});
 </script>
 
 <style>
