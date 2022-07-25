@@ -29,20 +29,16 @@
             {{ userScore
             }}{{
               enemyHasPlayed === "undefinedundefinedundefined" ||
-              enemyHasGivenAnswer === 0
+              enemyHasGivenAnswer !== 0
                 ? ` - ${rivalScore}`
                 : ""
             }}
           </h3>
         </v-row>
         <v-row class="align-center justify-center pa-2">
-          <h3
-            v-if="
-              enemyHasPlayed !== 'undefinedundefinedundefined' ||
-              enemyHasGivenAnswer !== 0
-            "
-          >
-            We've sent your challenge to {{ rival.name.split(" ")[0] }}!
+          <h3 v-if="enemyHasGivenAnswer === 0">
+            We've sent your challenge to
+            {{ rival.name.split(" ")[0] }}!
           </h3>
           <h3 v-else-if="userScore > rivalScore" class="text-center">
             Congratulations, you've earned your 3 coins!
